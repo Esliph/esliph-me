@@ -5,10 +5,9 @@ import { GlobalInterceptor } from '@util/interceptor'
 import { AppController } from '@app.controller'
 import { AppService } from '@app.service'
 import { GlobalMiddleware } from '@util/middleware'
-import { GlobalGuard } from '@util/guard'
 import { AuthModule } from '@modules/auth/auth.module'
 import { UserModule } from '@modules/user/user.modules'
-import { AuthenticateGuard } from '@modules/auth/guards/jwt-auth.guard'
+import { AuthenticationGuard } from '@modules/auth/guards/authentication.guard'
 
 const AppModuleServices: Provider[] = []
 
@@ -23,7 +22,7 @@ const AppModuleDependencies: Provider[] = [
     },
     {
         provide: APP_GUARD,
-        useClass: AuthenticateGuard
+        useClass: AuthenticationGuard
     }
 ]
 

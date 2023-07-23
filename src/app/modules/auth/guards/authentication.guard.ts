@@ -1,21 +1,37 @@
+import { ExecutionContext, Injectable } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 import { UnauthorizedException } from '@util/exceptions/unauthorized.exception'
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
-import { Observable } from 'rxjs'
-import { Request } from '@@types/http'
+import { PrivilegeCore } from '@services/privilege'
+import { ValidPrivileges } from '@util/privileges'
+import { AuthService } from '@modules/auth/auth.service'
 
 @Injectable()
-export class AuthenticationGuard implements CanActivate {
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-        const { headers } = context.switchToHttp().getRequest<Request>()
+export class AuthenticationGuard extends AuthGuard('jwt') {
+    constructor(
+        private readonly authService: AuthService
+    ) {
+        super()
+    }
 
-        const { Authentication } = headers
+    async canActivate(context: ExecutionContext) {
+        const privileges = PrivilegeCore.getPrivilegesFiltered(context)
 
-        if (!Authentication) { throw new UnauthorizedException() }
+        const responsePrivilegeGlobal = ValidPrivileges(...privileges)
 
-        const [bearer, token] = `${Authentication}`.split(' ')
+        if (!responsePrivilegeGlobal) { throw new UnauthorizedException() }
 
-        if (bearer !== 'Bearer') { throw new UnauthorizedException() }
+        const responsePrivilegeUser = await this.authService.validatePrivilege({ id: 1, privileges })
 
-        return true
+        if (!responsePrivilegeUser.isSuccess()) { throw new UnauthorizedException(responsePrivilegeUser.getError()) }
+
+        const canActivate = super.canActivate(context)
+
+        if (typeof canActivate === 'boolean') {
+            return canActivate
+        }
+
+        const canActivatePromise = canActivate as Promise<boolean>
+
+        return canActivatePromise.catch(err => { throw new UnauthorizedException() })
     }
 }
