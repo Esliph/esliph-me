@@ -45,7 +45,7 @@ export class UserController {
         return res.status(response.getStatus()).send(response.getResponse())
     }
 
-    @Privilege(UserPrivileges.Find, UserPrivileges.Delete)
+    @Privilege(UserPrivileges.Delete)
     @Delete('/delete/:id')
     async delete(@Param('id') id: string, @Body() body: UserDeleteUseCaseDTO, @Res() res: Response) {
         const response = await this.userService.delete({ id, ...body })

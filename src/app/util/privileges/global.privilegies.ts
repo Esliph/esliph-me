@@ -1,3 +1,5 @@
+import { PrivilegeCore } from '@services/privilege'
+
 export enum PrivilegeParams {
     Separator = '/'
 }
@@ -7,3 +9,7 @@ export enum GlobalPrivileges {
     Public = 'public',
     Private = 'private'
 }
+
+export const globalPrivileges = Object.keys(GlobalPrivileges).map(privilege => GlobalPrivileges[privilege])
+
+PrivilegeCore.registerPrivilege(...globalPrivileges)

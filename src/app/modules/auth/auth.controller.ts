@@ -12,6 +12,7 @@ import { GlobalPrivileges } from '@util/privileges'
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
+    @Privilege(GlobalPrivileges.Public)
     @Post('/sign-up')
     async signUp(@Body() body: AuthSignUpUseCaseDTO, @Res() res: Response) {
         const response = await this.authService.signUp({ ...body })
@@ -26,8 +27,8 @@ export class AuthController {
         return res.status(response.getStatus()).send(response.getResponse())
     }
 
-    @Post('/sign-in')
     @Privilege(GlobalPrivileges.Public)
+    @Post('/sign-in')
     async signIn(@Body() body: AuthSignInUseCaseDTO, @Res() res: Response) {
         const response = await this.authService.signIn({ ...body })
 
