@@ -38,6 +38,7 @@
         "test:e2e": "jest --config ./test/jest-e2e.json"
     },
     "dependencies": {
+        "@esliph/cli": "^1.0.1",
         "@esliph/util-node": "^1.0.21",
         "@fastify/compress": "^6.4.0",
         "@fastify/cookie": "^8.3.0",
