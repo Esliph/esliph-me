@@ -1,4 +1,4 @@
-import { PrivilegeCore } from '@services/privilege'
+import { PrivilegeType, PrivilegeCore } from '@services/privilege'
 
 export enum PrivilegeParams {
     Separator = '/'
@@ -7,9 +7,9 @@ export enum PrivilegeParams {
 export enum GlobalPrivileges {
     Ignore = 'ignore',
     Public = 'public',
-    Private = 'private'
+    Private = 'private',
 }
 
-export const globalPrivileges = Object.keys(GlobalPrivileges).map(privilege => GlobalPrivileges[privilege])
+export const globalPrivileges = Object.keys(GlobalPrivileges).map(privilege => GlobalPrivileges[privilege]) as string[]
 
-PrivilegeCore.registerPrivilege(...globalPrivileges)
+PrivilegeCore.registerPrivilege(...globalPrivileges.map(globalPrivilege => ({ name: globalPrivilege, type: PrivilegeType.Global })))

@@ -1,9 +1,9 @@
-import { RequestAuthenticate } from '@@types/http'
+import { PrivilegeModel } from '@@types/privileges'
 import { ExecutionContext, Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { UnauthorizedException } from '@util/exceptions/unauthorized.exception'
-import { PrivilegeCore } from '@services/privilege'
-import { ValidPrivileges, removeGlobalPrivileges } from '@util/privileges'
+import { PrivilegeCore, PrivilegeType } from '@services/privilege'
+import { ValidPrivileges } from '@util/privileges'
 import { AuthService } from '@modules/auth/auth.service'
 
 @Injectable()
@@ -15,21 +15,21 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
     }
 
     async canActivate(context: ExecutionContext) {
-        const privileges = PrivilegeCore.getPrivilegesFiltered(context)
+        const privileges = PrivilegeCore.extractPrivilegesOfContext(context)
+
+        console.log(context.switchToHttp().getRequest())
 
         if (privileges.length == 0) { return true }
 
-        const responsePrivilegeGlobal = ValidPrivileges(...privileges)
+        const privilegesGlobal = PrivilegeCore.filterByTypeInPrivileges(privileges, PrivilegeType.Global)
+
+        const responsePrivilegeGlobal = ValidPrivileges(...privilegesGlobal)
 
         if (!responsePrivilegeGlobal) { throw new UnauthorizedException() }
 
-        const privilegesWithoutGlobalPrivileges = this.getPrivilegesWithoutGlobalPrivileges(privileges)
+        const privilegesWithoutGlobalPrivileges = PrivilegeCore.filterByNotTypeInPrivileges(privileges, PrivilegeType.Global)
 
         if (privilegesWithoutGlobalPrivileges.length == 0) { return true }
-
-        const responsePrivilegeUser = await this.authService.validatePrivilege({ id: 1, privileges: privilegesWithoutGlobalPrivileges })
-
-        if (!responsePrivilegeUser.isSuccess()) { throw new UnauthorizedException(responsePrivilegeUser.getError()) }
 
         const canActivate = super.canActivate(context)
 
@@ -45,7 +45,7 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
         })
     }
 
-    private getPrivilegesWithoutGlobalPrivileges(privileges: string[]) {
-        return removeGlobalPrivileges(privileges)
+    private validPrivilegesGlobal(privilegesGlobal: PrivilegeModel[]) {
+
     }
 }

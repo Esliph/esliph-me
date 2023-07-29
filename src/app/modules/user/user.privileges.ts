@@ -1,4 +1,4 @@
-import { PrivilegeCore } from '@services/privilege'
+import { PrivilegeCore, PrivilegeType } from '@services/privilege'
 import { PrivilegeParams } from '@util/privileges'
 
 export const UserPrivilegeParent = 'users'
@@ -14,4 +14,4 @@ export enum UserPrivileges {
 
 const userPrivileges: string[] = Object.keys(UserPrivileges).map(key => UserPrivileges[key])
 
-PrivilegeCore.registerPrivilege(...userPrivileges)
+PrivilegeCore.registerPrivilege(...userPrivileges.map(privilege => ({ name: privilege, type: PrivilegeType.User })))

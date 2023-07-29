@@ -1,12 +1,13 @@
+import { PrivilegeModel } from '@@types/privileges'
 import { Result } from '@esliph/util-node'
 import { Injectable } from '@nestjs/common'
 
 export type AuthValidatePrivilegeUseCaseArgs = {
-    id: number, privileges: string[]
+    id: number, privileges: PrivilegeModel[]
 }
 
 const privilegesInUser: { [x: number]: string[] } = {
-    1: ['users/list']
+    1: ['$root']
 }
 
 @Injectable()
@@ -16,7 +17,7 @@ export class AuthValidatePrivilegeUseCase {
     async perform(args: AuthValidatePrivilegeUseCaseArgs) {
         const allPrivilegies = privilegesInUser[args.id]
 
-        const validPrivileges = args.privileges.some(privilegeRequest => !allPrivilegies.find(privilege => privilegeRequest == privilege))
+        const validPrivileges = args.privileges.some(privilegeRequest => !allPrivilegies.find(privilege => privilegeRequest.name == privilege))
 
         if (validPrivileges) {
             return Result.failure({ title: 'Validate Privileges', message: [] })
