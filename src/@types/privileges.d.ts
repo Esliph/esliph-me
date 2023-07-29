@@ -1,6 +1,6 @@
-import { PrivilegeType } from '@services/privilege'
+import { PrivilegeAccess } from '@modules/privilege/operational/controller'
 
 export type PrivilegeModel = {
     name: string,
-    type: PrivilegeType
+    type: PrivilegeAccess
 }

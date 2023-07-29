@@ -1,35 +1,29 @@
+import { PrivilegeOperational } from '@modules/privilege/operational/controller'
 import { PrivilegeModel } from '@@types/privileges'
 import { ExecutionContext, Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { UnauthorizedException } from '@util/exceptions/unauthorized.exception'
-import { PrivilegeCore, PrivilegeType } from '@services/privilege'
-import { ValidPrivileges } from '@util/privileges'
-import { AuthService } from '@modules/auth/auth.service'
+import { PrivilegeService } from '@modules/privilege/privilege.service'
 
 @Injectable()
 export class AuthenticationGuard extends AuthGuard('jwt') {
     constructor(
-        private readonly authService: AuthService
+        private readonly privilegeService: PrivilegeService
     ) {
         super()
     }
 
     async canActivate(context: ExecutionContext) {
-        const privileges = PrivilegeCore.extractPrivilegesOfContext(context)
+        const privileges = PrivilegeOperational.extractPrivilegesOfContext(context)
 
-        console.log(context.switchToHttp().getRequest())
+        const responseValidatePrivilege = await this.privilegeService.validatePrivilege({
+            id: 0,
+            privileges: privileges.map(privilege => privilege.name)
+        })
 
-        if (privileges.length == 0) { return true }
-
-        const privilegesGlobal = PrivilegeCore.filterByTypeInPrivileges(privileges, PrivilegeType.Global)
-
-        const responsePrivilegeGlobal = ValidPrivileges(...privilegesGlobal)
-
-        if (!responsePrivilegeGlobal) { throw new UnauthorizedException() }
-
-        const privilegesWithoutGlobalPrivileges = PrivilegeCore.filterByNotTypeInPrivileges(privileges, PrivilegeType.Global)
-
-        if (privilegesWithoutGlobalPrivileges.length == 0) { return true }
+        if (!responseValidatePrivilege.isSuccess()) {
+            throw new UnauthorizedException(responseValidatePrivilege.getError())
+        }
 
         const canActivate = super.canActivate(context)
 

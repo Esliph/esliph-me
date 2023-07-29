@@ -5,13 +5,13 @@ import { PrivilegeModel } from '@@types/privileges'
 
 export const PRIVILEGE_KEY_NAME = 'privileges'
 
-export enum PrivilegeType {
+export enum PrivilegeAccess {
     Global = 'global',
     User = 'user',
     Root = '$root'
 }
 
-export class PrivilegeCore {
+export class PrivilegeOperational {
     private static privileges: PrivilegeModel[] = []
     private static metadataController = new MetadataControl(new Reflector())
 
@@ -31,7 +31,7 @@ export class PrivilegeCore {
         return this.metadataController.set(PRIVILEGE_KEY_NAME, ...privilegesModel.map(privilege => JSON.stringify(privilege)))
     }
 
-    static getPrivilegesByType(type: PrivilegeType) {
+    static getPrivilegesByType(type: PrivilegeAccess) {
         return this.privileges.filter(privilege => privilege.type == type)
     }
 
@@ -39,11 +39,15 @@ export class PrivilegeCore {
         return this.privileges.find(privilege => privilege.name == name) || null
     }
 
-    static filterByTypeInPrivileges(privileges: PrivilegeModel[], ...types: PrivilegeType[]) {
+    static getPrivilegesByName(names: string[]) {
+        return this.privileges.filter(privilege => names.find(name => name == privilege.name))
+    }
+
+    static filterByTypeInPrivileges(privileges: PrivilegeModel[], ...types: PrivilegeAccess[]) {
         return privileges.filter(privilege => types.find(type => privilege.type == type))
     }
 
-    static filterByNotTypeInPrivileges(privileges: PrivilegeModel[], ...types: PrivilegeType[]) {
+    static filterByNotTypeInPrivileges(privileges: PrivilegeModel[], ...types: PrivilegeAccess[]) {
         return privileges.filter(privilege => !types.find(type => privilege.type == type))
     }
 

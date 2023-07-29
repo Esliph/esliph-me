@@ -5,6 +5,7 @@ import { PrivilegeFindOneUseCase, PrivilegeFindOneUseCaseArgs } from '@modules/p
 import { PrivilegeListUseCase, PrivilegeListUseCaseArgs } from '@modules/privilege/use-case/list.use-case'
 import { PrivilegeUpdateUseCase, PrivilegeUpdateUseCaseArgs } from '@modules/privilege/use-case/update.use-case'
 import { PrivilegeDeleteUseCase, PrivilegeDeleteUseCaseArgs } from '@modules/privilege/use-case/delete.use-case'
+import { PrivilegeValidateUseCase, PrivilegeValidateUseCaseArgs } from '@modules/privilege/use-case/validate-privileges.use-case'
 
 @Injectable()
 export class PrivilegeService {
@@ -13,7 +14,8 @@ export class PrivilegeService {
         private readonly listUC: PrivilegeListUseCase,
         private readonly updateUC: PrivilegeUpdateUseCase,
         private readonly deleteUC: PrivilegeDeleteUseCase,
-        private readonly findUC: PrivilegeFindOneUseCase
+        private readonly findUC: PrivilegeFindOneUseCase,
+        private readonly validatePrivilegeUC: PrivilegeValidateUseCase,
     ) { }
 
     async getPrivileges(body?: PrivilegeListUseCaseArgs) {
@@ -76,6 +78,19 @@ export class PrivilegeService {
         } catch (err: any) {
             return Result.failure(
                 { title: 'Delete Privilege', message: [{ message: 'Cannot delete privilege', origin: 'ServerAPI' }] },
+                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
+            )
+        }
+    }
+
+    async validatePrivilege(body: PrivilegeValidateUseCaseArgs) {
+        try {
+            const response = await this.validatePrivilegeUC.perform({ ...body })
+
+            return response
+        } catch (err) {
+            return Result.failure(
+                { title: 'Validate Privileges', message: [{ message: 'Cannot validate privileges', origin: 'ServerAPI' }] },
                 HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
             )
         }

@@ -1,3 +1,4 @@
+import { GlobalPrivileges } from '@modules/privilege/global.privileges'
 import { AppCore } from '@core'
 import { Controller, Post } from '@nestjs/common'
 import { Body, Req, Res } from '@nestjs/common/decorators'
@@ -6,7 +7,6 @@ import { AuthSignInUseCaseDTO } from '@modules/auth/use-case/sign-in.use-case'
 import { AuthSignUpUseCaseDTO } from '@modules/auth/use-case/sign-up.use-case'
 import { AuthService } from '@modules/auth/auth.service'
 import { Privilege } from '@util/decorators/privilege.decorator'
-import { GlobalPrivileges } from '@util/privileges'
 
 @Controller('/auth')
 export class AuthController {

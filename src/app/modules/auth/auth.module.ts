@@ -8,7 +8,9 @@ import { JwtStrategy } from '@modules/auth/strategies/jwt-auth.strategy'
 const authModuleServices: Provider[] = [AuthService]
 
 @Module({
-    imports: [AuthUseCaseModule],
+    imports: [
+        AuthUseCaseModule
+    ],
     controllers: [AuthController],
     providers: [
         JwtStrategy,

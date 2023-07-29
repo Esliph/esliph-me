@@ -57,6 +57,7 @@ export class AuthSignUpUseCase {
             if (err instanceof ResultException) {
                 return err
             }
+
             return Result.failure({ title: 'Auth Sign Up', message: [{ message: 'Cannot sign up' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
         }
     }

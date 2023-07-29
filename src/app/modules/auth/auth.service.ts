@@ -3,14 +3,12 @@ import { HttpEsliph, Result } from '@esliph/util-node'
 import { AuthSignInUseCase, AuthSignInUseCaseArgs } from '@modules/auth/use-case/sign-in.use-case'
 import { AuthSignUpUseCase, AuthSignUpUseCaseArgs } from '@modules/auth/use-case/sign-up.use-case'
 import { AuthValidCredentialsUseCase } from '@modules/auth/use-case/valid-credentials'
-import { AuthValidatePrivilegeUseCase, AuthValidatePrivilegeUseCaseArgs } from '@modules/auth/use-case/validate-privilege.use-case'
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly signUpUC: AuthSignUpUseCase,
         private readonly signInUC: AuthSignInUseCase,
-        private readonly validatePrivilegeUC: AuthValidatePrivilegeUseCase,
         private readonly validCredentials: AuthValidCredentialsUseCase
     ) { }
 
@@ -48,18 +46,5 @@ export class AuthService {
         }
 
         return response.getValue()
-    }
-
-    async validatePrivilege(body: AuthValidatePrivilegeUseCaseArgs) {
-        try {
-            const response = await this.validatePrivilegeUC.perform({ ...body })
-
-            return response
-        } catch (err) {
-            return Result.failure(
-                { title: 'Validate Privileges', message: [{ message: 'Cannot validate user privileges', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
     }
 }

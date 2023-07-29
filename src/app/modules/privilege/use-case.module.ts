@@ -1,5 +1,6 @@
+import { PrivilegeValidateUseCase } from '@modules/privilege/use-case/validate-privileges.use-case'
 import { PrivilegeDependencies } from '@modules/privilege/privilege.dependencies'
-import { Global, Module, Provider } from '@nestjs/common'
+import { Module, Provider } from '@nestjs/common'
 import { PrivilegeDeleteUseCase } from '@modules/privilege/use-case/delete.use-case'
 import { PrivilegeListUseCase } from '@modules/privilege/use-case/list.use-case'
 import { PrivilegeUpdateUseCase } from '@modules/privilege/use-case/update.use-case'
@@ -8,14 +9,14 @@ import { PrivilegeCreateUseCase } from '@modules/privilege/use-case/create.use-c
 
 const privilegeServicesUseCase: Provider[] = [
     ...PrivilegeDependencies,
-        PrivilegeCreateUseCase,
-        PrivilegeListUseCase,
-        PrivilegeUpdateUseCase,
-        PrivilegeDeleteUseCase,
-        PrivilegeFindOneUseCase
+    PrivilegeCreateUseCase,
+    PrivilegeListUseCase,
+    PrivilegeUpdateUseCase,
+    PrivilegeDeleteUseCase,
+    PrivilegeFindOneUseCase,
+    PrivilegeValidateUseCase
 ]
 
-@Global()
 @Module({
     providers: [...privilegeServicesUseCase],
     exports: [...privilegeServicesUseCase]
