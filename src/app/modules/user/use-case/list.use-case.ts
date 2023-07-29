@@ -14,8 +14,9 @@ export const UserListUseCaseArgsSchema = z.object({})
 
 const UserPropsSelected = {
     id: true,
-    email: true,
     username: true,
+    name: true,
+    online: true,
     createAt: true
 }
 

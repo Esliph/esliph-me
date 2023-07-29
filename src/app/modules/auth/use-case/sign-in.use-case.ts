@@ -26,6 +26,7 @@ export const AuthSignInUseCaseArgsSchema = z.object({
 const UserPropsSelected = {
     id: true,
     email: true,
+    name: true,
     password: true,
     username: true,
     createAt: true,
@@ -44,6 +45,7 @@ export type AuthSignInUseCasePerformResponse = Promise<Result<AuthSignInUseCaseP
 export class AuthSignInUseCase {
     constructor(
         private readonly findUserUniqueRepository: UserFindUniqueRepositoryAbstract,
+        private readonly userUpdateRepository: UserUpdateRepositoryAbstract,
         private readonly jwtService: JwtService
     ) { }
 
@@ -75,6 +77,8 @@ export class AuthSignInUseCase {
             sub: user.id,
             username: user.username, email: user.email
         })
+
+        await this.updateUserLogged({ id: user.id })
 
         return Result.success({ token })
     }
@@ -148,5 +152,13 @@ export class AuthSignInUseCase {
         const token = await this.jwtService.signAsync(args)
 
         return token
+    }
+
+    private async updateUserLogged(args: { id: number }) {
+        const responseUserLogged = await this.userUpdateRepository.perform({ where: { id: args.id }, data: { online: true } })
+
+        if (!responseUserLogged.isSuccess) {
+            throw new ResultException<UserPropsSelectedType>(responseUserLogged.getError(), responseUserLogged.getStatus())
+        }
     }
 }

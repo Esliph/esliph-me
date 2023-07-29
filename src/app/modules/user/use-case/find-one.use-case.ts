@@ -12,8 +12,9 @@ export const UserFindOneUseCaseArgsSchema = ZodValidateService.defaultSchemaMode
 
 const UserPropsSelected = {
     id: true,
-    email: true,
     username: true,
+    name: true,
+    online: true,
     createAt: true
 }
 

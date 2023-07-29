@@ -12,6 +12,8 @@ import { ResultException } from '@util/exceptions/result.exception'
 export class AuthSignUpUseCaseDTO {
     @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.USERNAME_IS_EMPTY })
     username: string
+    @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.NAME_IS_EMPTY })
+    name: string
     @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.EMAIL_IS_EMPTY })
     email: string
     @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.PASSWORD_IS_EMPTY })
@@ -24,6 +26,11 @@ export const AuthSignUpUseCaseArgsSchema = z.object({
         .trim()
         .nonempty({ message: ENUM_AUTH_MESSAGES.USERNAME_IS_EMPTY })
         .regex(USER_REGEX.USERNAME_REGEX, { message: ENUM_AUTH_MESSAGES.FORMAT_USERNAME_INVALID }),
+    name: z
+        .string()
+        .trim()
+        .nonempty({ message: ENUM_AUTH_MESSAGES.NAME_IS_EMPTY })
+        .regex(USER_REGEX.NAME_REGEX, { message: ENUM_AUTH_MESSAGES.FORMAT_NAME_INVALID }),
     email: z.string().email({ message: ENUM_AUTH_MESSAGES.FORMAT_EMAIL_INVALID }).trim().nonempty({ message: ENUM_AUTH_MESSAGES.EMAIL_IS_EMPTY }),
     password: z
         .string()
@@ -57,9 +64,9 @@ export class AuthSignUpUseCase {
     private async performSignUp(createArgs: AuthSignUpUseCaseArgs): AuthSignUpUseCasePerformResponse {
         const createArgsValidationResult = this.validateArgsProps(createArgs)
 
-        const { email, password, username } = createArgsValidationResult.getValue()
+        const { email, password, username, name } = createArgsValidationResult.getValue()
 
-        const userEntityTable = new UserEntitySimple({ email, password, username })
+        const userEntityTable = new UserEntitySimple({ email, password, username, name, online: false })
 
         await userEntityTable.cryptPassword()
 

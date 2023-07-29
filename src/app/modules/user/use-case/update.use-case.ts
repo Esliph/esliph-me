@@ -13,6 +13,8 @@ export class UserUpdateUseCaseDTO {
     @IsOptional()
     username?: string
     @IsOptional()
+    name?: string
+    @IsOptional()
     email?: string
 }
 
@@ -89,7 +91,8 @@ export class UserUpdateUseCase {
             where: { id: userData.id },
             data: {
                 username: userData.username,
-                email: userData.email
+                email: userData.email,
+                name: userData.name,
             }
         })
 

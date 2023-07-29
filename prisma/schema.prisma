@@ -9,12 +9,59 @@ datasource db {
 }
 
 model User {
-    id       Int      @id @default(autoincrement())
-    username String   @unique
-    email    String   @unique
+    id       Int        @id @default(autoincrement())
+    username String     @unique
+    name     String
+    email    String     @unique
     password String
-    createAt DateTime @default(now()) @map("create_at")
-    updateAt DateTime @updatedAt @map("update_at")
+    online   Boolean
+    createAt DateTime   @default(now()) @map("create_at")
+    updateAt DateTime   @updatedAt @map("update_at")
+    posts    Post[]
+    chats    UserChat[]
 
     @@map("user")
+}
+
+enum PostType {
+    Message
+    Info
+    Error
+    Warn
+}
+
+model Post {
+    id       Int      @id @default(autoincrement())
+    chatId   Int      @map("chat_id")
+    userId   Int?     @map("user_id")
+    body     String
+    type     PostType
+    createAt DateTime @default(now()) @map("create_at")
+    updateAt DateTime @updatedAt @map("update_at")
+    user     User?    @relation(fields: [userId], references: [id])
+    Chat     Chat     @relation(fields: [chatId], references: [id])
+
+    @@map("post")
+}
+
+model Chat {
+    id       Int        @id @default(autoincrement())
+    createAt DateTime   @default(now()) @map("create_at")
+    updateAt DateTime   @updatedAt @map("update_at")
+    posts    Post[]
+    users    UserChat[]
+
+    @@map("chat")
+}
+
+model UserChat {
+    id       Int      @id @default(autoincrement())
+    chatId   Int      @map("chat_id")
+    userId   Int      @map("user_id")
+    createAt DateTime @default(now()) @map("create_at")
+    updateAt DateTime @updatedAt @map("update_at")
+    chat     Chat     @relation(fields: [chatId], references: [id])
+    user     User     @relation(fields: [userId], references: [id])
+
+    @@map("use_cha")
 }
