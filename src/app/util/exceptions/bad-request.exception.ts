@@ -1,8 +1,13 @@
-import { HttpException } from '@nestjs/common'
-import { HttpEsliph, ResultEsliph } from '@esliph/util-node'
+import { ExceptionArgs } from '@util/exceptions/exception'
+import { HttpException, HttpStatusCodes } from '@util/exceptions/http.exception'
+
+const ERROR_INFO_DEFAULT: ExceptionArgs = {
+    title: 'Requisition',
+    message: 'Bad Request'
+}
 
 export class BadRequestException extends HttpException {
-    constructor(error: ResultEsliph.ResultModel['error']) {
-        super({ ok: false, status: HttpEsliph.HttpStatusCodes.BAD_REQUEST, value: null, error }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+    constructor({ message = ERROR_INFO_DEFAULT.message, title = ERROR_INFO_DEFAULT.title, causes = ERROR_INFO_DEFAULT.causes, description = ERROR_INFO_DEFAULT.description }: Omit<ExceptionArgs, 'message'> & Partial<{ message?: string }>) {
+        super({ message, causes, description, title }, HttpStatusCodes.BAD_REQUEST)
     }
 }

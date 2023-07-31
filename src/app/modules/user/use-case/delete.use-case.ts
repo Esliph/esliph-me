@@ -3,7 +3,7 @@ import { HttpEsliph, Result } from '@esliph/util-node'
 import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
 import { UserDeleteRepositoryAbstract } from '@modules/user/repository/delete.repository'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 
 export class UserDeleteUseCaseDTO { }
 

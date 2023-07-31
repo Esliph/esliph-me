@@ -1,13 +1,60 @@
+import { HttpStatusCodes } from '@util/exceptions/http.exception'
+import { ErrorType } from '@@types/error'
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common'
 import { Prisma, PrismaClient } from '@prisma/client'
-import { getEnv } from '@esliph/util-node'
+import { Result, getEnv } from '@esliph/util-node'
 import { AppCore } from '@core'
+import { ErrorResultInfo } from '@esliph/util-node/dist/lib/error'
 
 export abstract class DatabaseService extends PrismaClient { }
-export abstract class DatabaseExceptionAbstract extends Prisma.PrismaClientKnownRequestError { }
+
+export class DatabaseModel {
+    extractError<T>(err: any, methodErrorInfo: { title: string, message: string }) {
+        let errorResultInfo: ErrorResultInfo
+
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            errorResultInfo = this.extractErrorIfPrismaClientKnownRequestError<T>(err, methodErrorInfo)
+        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            errorResultInfo = this.extractErrorIfPrismaClientUnknownRequestError<T>(err, methodErrorInfo)
+        } else {
+            errorResultInfo = this.extractErrorUnknown<T>(methodErrorInfo)
+        }
+
+        return Result.failure<T>(errorResultInfo, HttpStatusCodes.BAD_REQUEST)
+    }
+
+    private extractErrorIfPrismaClientKnownRequestError<T>(err: Prisma.PrismaClientKnownRequestError, { title, message }: { title: string, message: string }): ErrorResultInfo {
+        const errorResultInfo: ErrorResultInfo = {
+            title,
+            message,
+            causes: [{ message: err.message, origin: (err.meta as any).target.join(';') }]
+        }
+
+        return errorResultInfo
+    }
+
+    private extractErrorIfPrismaClientUnknownRequestError<T>(err: Prisma.PrismaClientUnknownRequestError, { title, message }: { title: string, message: string }): ErrorResultInfo {
+        const errorResultInfo: ErrorResultInfo = {
+            title,
+            message,
+            causes: [{ message: err.message }]
+        }
+
+        return errorResultInfo
+    }
+
+    private extractErrorUnknown<T>({ title, message }: { title: string, message: string }): ErrorResultInfo {
+        const errorResultInfo: ErrorResultInfo = {
+            title,
+            message,
+        }
+
+        return errorResultInfo
+    }
+}
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, DatabaseService {
+export class PrismaService extends DatabaseService implements OnModuleInit, DatabaseService {
     constructor() {
         super({
             log: [
@@ -26,12 +73,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, Databas
             await this.$connect()
 
             AppCore.log('Database connected successfully', 'Database')
-        } catch (err: Prisma.PrismaClientKnownRequestError | any) {
+        } catch (err: Prisma.PrismaClientInitializationError | any) {
             AppCore.emit('error', {
-                origin: 'Database',
                 title: 'Connection Database',
-                message: [{ message: 'Database connection failed', origin: 'ConnectionDatabase' }],
-                errorOriginal: err
+                message: 'Database connection failed',
+                causes: [{ message: err.message, origin: err.errorCode }],
+                stack: err.stack,
+                type: ErrorType.Database
             })
 
             if (getEnv({ name: 'NODE_ENV' }) == 'production') {
@@ -51,10 +99,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, Databas
         // @ts-expect-error
         this.$on('error', (ev: any) => {
             AppCore.emit('error', {
-                title: 'DatabaseQuery',
-                origin: 'Database:Service',
-                message: [{ message: ev.message, ...(ev.meta?.target && { origin: ev.meta.target.join(';') }) }],
-                errorOriginal: ev
+                title: 'PrismaService',
+                message: ev.message,
+                stack: ev.stack,
+                causes: [{ message: ev.message, origin: `${ev.errorCode}${ev.meta?.target ? `: [${ev.meta.target.join(';')}]` : ''}` }],
+                type: ErrorType.Database
             })
         })
         // @ts-expect-error

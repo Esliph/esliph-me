@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { Injectable } from '@nestjs/common'
 import { HttpEsliph, Result } from '@esliph/util-node'
-import { DatabaseService } from '@services/database'
+import { DatabaseModel, DatabaseService } from '@services/database'
 import { UserModelTable } from '@modules/user/schema'
 
 type UserGetPayloadTypes = boolean | null | undefined | { select?: Prisma.UserSelect | null }
@@ -51,8 +51,8 @@ export abstract class UserModelTableRepositoryAbstract {
 }
 
 @Injectable()
-export class UserModelTableRepository implements UserModelTableRepositoryAbstract {
-    constructor(private readonly repository: DatabaseService) { }
+export class UserModelTableRepository extends DatabaseModel implements UserModelTableRepositoryAbstract {
+    constructor(private readonly repository: DatabaseService) { super() }
 
     async create<Args extends UserCreateArgs>(args: Args) {
         try {
@@ -61,12 +61,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserCreateResponse>({
-                title: 'Register User',
-                message: [
-                    { message: 'Cannot register user', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserCreateResponse>(err, { title: 'Register User', message: 'Cannot register user' })
         }
     }
 
@@ -77,12 +72,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserCreateManyResponse>({
-                title: 'Register Users',
-                message: [
-                    { message: 'Cannot register users', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserCreateManyResponse>(err, { title: 'Register Users', message: 'Cannot register users' })
         }
     }
 
@@ -93,12 +83,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserUpdateResponse>({
-                title: 'Update User',
-                message: [
-                    { message: 'Cannot update user', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserUpdateResponse>(err, { title: 'Update User', message: 'Cannot update user' })
         }
     }
 
@@ -109,12 +94,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserUpdateManyResponse>({
-                title: 'Update Users',
-                message: [
-                    { message: 'Cannot update users', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserUpdateManyResponse>(err, { title: 'Update Users', message: 'Cannot update users' })
         }
     }
 
@@ -124,22 +104,14 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
                 .findFirst(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<UserFindFirstResponse<Args>>({
-                            title: 'Find User',
-                            message: [{ message: 'User not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<UserFindFirstResponse<Args>>(res, { title: 'Find User', message: 'User not found' })
                     }
                     return Result.success({ user: res })
                 }) as Result<UserFindFirstResponse<Args>>
 
             return response
         } catch (err: any) {
-            return Result.failure<UserFindFirstResponse<Args>>({
-                title: 'Find User',
-                message: [
-                    { message: 'Cannot find user', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserFindFirstResponse<Args>>(err, { title: 'Find User', message: 'Cannot find user' })
         }
     }
 
@@ -149,22 +121,14 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
                 .findFirst(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<UserExistsResponse>({
-                            title: 'User Exists',
-                            message: [{ message: 'User not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<UserExistsResponse>(res, { title: 'User Exists', message: 'User not found' })
                     }
                     return Result.success<UserExistsResponse>(true)
                 })
 
             return response
         } catch (err: any) {
-            return Result.failure<UserExistsResponse>({
-                title: 'Find User',
-                message: [
-                    { message: 'Cannot find user', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserExistsResponse>(err, { title: 'Find User', message: 'Cannot find user' })
         }
     }
 
@@ -174,22 +138,14 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
                 .findFirst(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<UserFindUniqueResponse<Args>>({
-                            title: 'User User',
-                            message: [{ message: 'User not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<UserFindUniqueResponse<Args>>(res, { title: 'User User', message: 'User not found' })
                     }
                     return Result.success({ user: res })
                 }) as Result<UserFindUniqueResponse<Args>>
 
             return response
         } catch (err: any) {
-            return Result.failure<UserFindUniqueResponse<Args>>({
-                title: 'Find User',
-                message: [
-                    { message: 'Cannot find user', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserFindUniqueResponse<Args>>(err, { title: 'User User', message: 'User not found' })
         }
     }
 
@@ -201,12 +157,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserFindFirstOrThrowResponse<Args>>({
-                title: 'Find User',
-                message: [
-                    { message: 'Cannot find user', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserFindFirstOrThrowResponse<Args>>(err, { title: 'Find User', message: 'Cannot find user' })
         }
     }
 
@@ -218,12 +169,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserFindUniqueOrThrowResponse<Args>>({
-                title: 'Find User',
-                message: [
-                    { message: 'Cannot find user', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserFindUniqueOrThrowResponse<Args>>(err, { title: 'Find User', message: 'Cannot find user' })
         }
     }
 
@@ -234,12 +180,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserFindManyResponse<Args>>({
-                title: 'Find Users',
-                message: [
-                    { message: 'Cannot find users', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserFindManyResponse<Args>>(err, { title: 'Find Users', message: 'Cannot find users' })
         }
     }
 
@@ -250,12 +191,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserDeleteResponse>({
-                title: 'Remove User',
-                message: [
-                    { message: 'Cannot remove user', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserDeleteResponse>(err, { title: 'Remove User', message: 'Cannot remove user' })
         }
     }
 
@@ -266,12 +202,7 @@ export class UserModelTableRepository implements UserModelTableRepositoryAbstrac
 
             return response
         } catch (err: any) {
-            return Result.failure<UserDeleteManyResponse>({
-                title: 'Remove Users',
-                message: [
-                    { message: 'Cannot remove users', origin: err.meta.target.join(';') }
-                ]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<UserDeleteManyResponse>(err, { title: 'Remove Users', message: 'Cannot remove users' })
         }
     }
 }

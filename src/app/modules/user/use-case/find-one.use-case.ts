@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
 import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserPropSelect } from '../repository/repository'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 
 export class UserFindOneUseCaseDTO { }
 

@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
 import { UserFindManyRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserPropSelect } from '@modules/user/repository/repository'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 
 export class UserListUseCaseDTO {
     /* Implement the properties that the use case requires in the parameters */

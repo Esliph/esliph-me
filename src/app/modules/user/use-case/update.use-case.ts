@@ -7,7 +7,7 @@ import { UserPropSelect } from '@modules/user/repository/repository'
 import { UserUpdateRepositoryAbstract } from '../repository/update.repository'
 import { UserFindUniqueRepositoryAbstract } from '../repository/find.repository'
 import { IsOptional } from 'class-validator'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 
 export class UserUpdateUseCaseDTO {
     @IsOptional()

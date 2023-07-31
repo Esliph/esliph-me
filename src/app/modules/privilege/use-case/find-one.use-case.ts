@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { HttpEsliph, Result } from '@esliph/util-node'
 import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 import { PrivilegePropSelect } from '@modules/privilege/repository/repository'
 import { PrivilegeFindUniqueRepositoryAbstract } from '@modules/privilege/repository/find.repository'
 

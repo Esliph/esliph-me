@@ -8,7 +8,7 @@ import { IsNotEmpty } from 'class-validator'
 import { JwtService } from '@nestjs/jwt'
 import { AuthenticationJWT } from '@@types/auth'
 import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 import { UserUpdateRepositoryAbstract } from '@modules/user/repository/update.repository'
 
 export class AuthSignInUseCaseDTO {

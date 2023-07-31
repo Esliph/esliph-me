@@ -7,7 +7,7 @@ import { IsNotEmpty } from 'class-validator'
 import { UserCreateRepositoryAbstract } from '@modules/user/repository/create.repository'
 import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
 import { USER_REGEX } from '@util/regex'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 
 export class AuthSignUpUseCaseDTO {
     @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.USERNAME_IS_EMPTY })

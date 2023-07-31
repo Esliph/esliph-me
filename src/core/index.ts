@@ -8,7 +8,7 @@ import fastifyCookie from '@fastify/cookie'
 import { ObserverEvent } from '@esliph/util-node'
 import { getEnv } from '@services/env'
 import { MainModule } from '@main.module'
-import { AppEvents } from '@@types/events.d'
+import { AppEvents } from '@@types/events'
 import { ConsoleLogger } from '@services/console'
 import { OPTIONS_NEST_APPLICATION } from '@config/nest'
 

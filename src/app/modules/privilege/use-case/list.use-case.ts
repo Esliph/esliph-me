@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
 import { PrivilegeFindManyRepositoryAbstract } from '@modules/privilege/repository/find.repository'
 import { PrivilegePropSelect } from '@modules/privilege/repository/repository'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 
 export class PrivilegeListUseCaseDTO {
     /* Set the DTO properties to list "Privilege" */

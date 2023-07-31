@@ -3,7 +3,7 @@ import { HttpEsliph, Result } from '@esliph/util-node'
 import { z } from 'zod'
 import { IsNotEmpty } from 'class-validator'
 import { ZodValidateService } from '@services/zod'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 import { PrivilegeEntitySimple } from '@modules/privilege/schema'
 import { PrivilegeCreateRepositoryAbstract } from '@modules/privilege/repository/create.repository'
 

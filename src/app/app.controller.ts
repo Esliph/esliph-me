@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Delete, Put } from '@nestjs/common'
 import { Body, Res, Param } from '@nestjs/common/decorators'
-import { Response } from '@@types/http.d'
+import { Response } from '@@types/http'
 import { AppService } from '@app.service'
 
 @Controller('/')

@@ -1,7 +1,8 @@
-import { Result, ResultEsliph } from '@esliph/util-node'
+import { Exception, ExceptionArgs } from '@util/exceptions/exception'
+import { HttpStatusCodes } from '@util/exceptions/http.exception'
 
-export class ResultException<T> extends Result<T> {
-    constructor(error: ResultEsliph.ResultModel<T>['error'], status: ResultEsliph.ResultModel<T>['status']) {
-        super({ ok: false, value: null, error, status })
+export class ResultException extends Exception {
+    constructor(errorInfo: ExceptionArgs, status = HttpStatusCodes.BAD_REQUEST) {
+        super(errorInfo, status)
     }
 }

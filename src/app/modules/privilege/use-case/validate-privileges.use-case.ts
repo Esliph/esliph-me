@@ -3,7 +3,7 @@ import { HttpEsliph, Result } from '@esliph/util-node'
 import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
 import { PrivilegeAccess, PrivilegeOperational } from '@modules/privilege/operational/controller'
-import { ResultException } from '@util/exceptions/result.exception'
+import ResultException from '@util/exceptions/result.exception'
 import { PrivilegeModel } from '@@types/privileges'
 import { ForbiddenException } from '@util/exceptions/forbidden.exception'
 
