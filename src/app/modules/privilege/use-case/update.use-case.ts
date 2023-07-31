@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
-import { IsOptional } from 'class-validator'
 import { ZodValidateService } from '@services/zod'
-import ResultException from '@util/exceptions/result.exception'
 import { PrivilegeEntityTable } from '@modules/privilege/schema'
 import { PrivilegePropSelect } from '@modules/privilege/repository/repository'
+import { HttpStatusCodes } from '@util/http/status-code'
 import { PrivilegeUpdateRepositoryAbstract } from '@modules/privilege/repository/update.repository'
 import { PrivilegeFindUniqueRepositoryAbstract } from '@modules/privilege/repository/find.repository'
+import { UseCase } from '@common/use-case'
 
 export class PrivilegeUpdateUseCaseDTO {
     /* Set the DTO properties to update the "Privilege" */
@@ -23,8 +23,13 @@ export type PrivilegeUpdateUseCasePerformResponseValue = { success: string }
 export type PrivilegeUpdateUseCasePerformResponse = Promise<Result<PrivilegeUpdateUseCasePerformResponseValue>>
 
 @Injectable()
-export class PrivilegeUpdateUseCase {
-    constructor(private readonly updatePrivilegeRepository: PrivilegeUpdateRepositoryAbstract, private readonly findPrivilegeRepository: PrivilegeFindUniqueRepositoryAbstract) { }
+export class PrivilegeUpdateUseCase extends UseCase {
+    constructor(
+        private readonly updatePrivilegeRepository: PrivilegeUpdateRepositoryAbstract,
+        private readonly findPrivilegeRepository: PrivilegeFindUniqueRepositoryAbstract
+    ) {
+        super()
+    }
 
     async perform(updateArgs: PrivilegeUpdateUseCaseArgs): PrivilegeUpdateUseCasePerformResponse {
         try {
@@ -32,10 +37,7 @@ export class PrivilegeUpdateUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Update Privilege', message: [{ message: 'Cannot update privilege' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Update Privilege', message: 'Cannot update privilege' })
         }
     }
 
@@ -56,7 +58,7 @@ export class PrivilegeUpdateUseCase {
             return Result.failure(performUpdateRepositoryResult.getError(), performUpdateRepositoryResult.getStatus())
         }
 
-        return Result.success({ success: 'Privilege update successfully' }, HttpEsliph.HttpStatusCodes.OK)
+        return Result.success({ success: 'Privilege update successfully' }, HttpStatusCodes.OK)
     }
 
     private async findPrivilegeToBeUpdated(args: { id: number }) {

@@ -7,6 +7,7 @@ import { AuthSignInUseCaseDTO } from '@modules/auth/use-case/sign-in.use-case'
 import { AuthSignUpUseCaseDTO } from '@modules/auth/use-case/sign-up.use-case'
 import { AuthService } from '@modules/auth/auth.service'
 import { Privilege } from '@util/decorators/privilege.decorator'
+import { ErrorType } from '@@types/error'
 
 @Controller('/auth')
 export class AuthController {
@@ -20,7 +21,7 @@ export class AuthController {
         if (!response.isSuccess()) {
             Application.emit('error', {
                 ...response.getError(),
-                origin: 'AuthController:SignUp'
+                type: ErrorType.HttpRequest
             })
         }
 
@@ -35,7 +36,7 @@ export class AuthController {
         if (!response.isSuccess()) {
             Application.emit('error', {
                 ...response.getError(),
-                origin: 'AuthController:SignIn'
+                type: ErrorType.HttpRequest
             })
         }
 

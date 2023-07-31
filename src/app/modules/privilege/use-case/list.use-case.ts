@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
+import { UseCase } from '@common/use-case'
 import { PrivilegeFindManyRepositoryAbstract } from '@modules/privilege/repository/find.repository'
 import { PrivilegePropSelect } from '@modules/privilege/repository/repository'
-import ResultException from '@util/exceptions/result.exception'
 
 export class PrivilegeListUseCaseDTO {
     /* Set the DTO properties to list "Privilege" */
@@ -24,8 +24,10 @@ export type PrivilegeListCasePerformResponseValue = { privileges: PrivilegePropS
 export type PrivilegeListCasePerformResponse = Promise<Result<PrivilegeListCasePerformResponseValue>>
 
 @Injectable()
-export class PrivilegeListUseCase {
-    constructor(private readonly listPrivilegeRepository: PrivilegeFindManyRepositoryAbstract) { }
+export class PrivilegeListUseCase extends UseCase {
+    constructor(private readonly listPrivilegeRepository: PrivilegeFindManyRepositoryAbstract) {
+        super()
+    }
 
     async perform(listArgs: PrivilegeListUseCaseArgs): PrivilegeListCasePerformResponse {
         try {
@@ -33,10 +35,7 @@ export class PrivilegeListUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Create Privilege', message: [{ message: 'Cannot create privilege' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'List Privileges', message: 'Cannot list privileges' })
         }
     }
 

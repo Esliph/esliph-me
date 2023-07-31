@@ -1,4 +1,4 @@
-import { HttpStatusCodes } from '@util/exceptions/http.exception'
+import { HttpStatusCodes } from '@util/http/status-code'
 import { ErrorType } from '@@types/error'
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common'
 import { Prisma, PrismaClient } from '@prisma/client'
@@ -13,17 +13,17 @@ export class DatabaseModel {
         let errorResultInfo: ErrorResultInfo
 
         if (err instanceof Prisma.PrismaClientKnownRequestError) {
-            errorResultInfo = this.extractErrorIfPrismaClientKnownRequestError<T>(err, methodErrorInfo)
+            errorResultInfo = this.extractErrorIfPrismaClientKnownRequestError(err, methodErrorInfo)
         } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            errorResultInfo = this.extractErrorIfPrismaClientUnknownRequestError<T>(err, methodErrorInfo)
+            errorResultInfo = this.extractErrorIfPrismaClientUnknownRequestError(err, methodErrorInfo)
         } else {
-            errorResultInfo = this.extractErrorUnknown<T>(methodErrorInfo)
+            errorResultInfo = this.extractErrorUnknown(methodErrorInfo)
         }
 
         return Result.failure<T>(errorResultInfo, HttpStatusCodes.BAD_REQUEST)
     }
 
-    private extractErrorIfPrismaClientKnownRequestError<T>(
+    private extractErrorIfPrismaClientKnownRequestError(
         err: Prisma.PrismaClientKnownRequestError,
         { title, message }: { title: string; message: string }
     ): ErrorResultInfo {
@@ -36,7 +36,7 @@ export class DatabaseModel {
         return errorResultInfo
     }
 
-    private extractErrorIfPrismaClientUnknownRequestError<T>(
+    private extractErrorIfPrismaClientUnknownRequestError(
         err: Prisma.PrismaClientUnknownRequestError,
         { title, message }: { title: string; message: string }
     ): ErrorResultInfo {
@@ -49,7 +49,7 @@ export class DatabaseModel {
         return errorResultInfo
     }
 
-    private extractErrorUnknown<T>({ title, message }: { title: string; message: string }): ErrorResultInfo {
+    private extractErrorUnknown({ title, message }: { title: string; message: string }): ErrorResultInfo {
         const errorResultInfo: ErrorResultInfo = {
             title,
             message
@@ -80,13 +80,15 @@ export class PrismaService extends DatabaseService implements OnModuleInit, Data
 
             Application.log('Database connected successfully', 'Database')
         } catch (err: Prisma.PrismaClientInitializationError | any) {
-            Application.emit('error', {
+            const errorEvent = {
                 title: 'Connection Database',
                 message: 'Database connection failed',
                 causes: [{ message: err.message, origin: err.errorCode }],
                 stack: err.stack,
                 type: ErrorType.Database
-            })
+            }
+
+            // Application.emit('error', errorEvent)
 
             if (getEnv({ name: 'NODE_ENV' }) == 'production') {
                 await this.$disconnect()
@@ -104,13 +106,15 @@ export class PrismaService extends DatabaseService implements OnModuleInit, Data
     private initComponent() {
         // @ts-expect-error
         this.$on('error', (ev: any) => {
-            Application.emit('error', {
+            const erroEvent = {
                 title: 'PrismaService',
                 message: ev.message,
                 stack: ev.stack,
                 causes: [{ message: ev.message, origin: `${ev.errorCode}${ev.meta?.target ? `: [${ev.meta.target.join(';')}]` : ''}` }],
                 type: ErrorType.Database
-            })
+            }
+
+            Application.emit('error', erroEvent)
         })
         // @ts-expect-error
         this.$on('info', (ev: any) => {

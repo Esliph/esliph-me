@@ -1,5 +1,5 @@
 import { ExceptionArgs } from '@util/exceptions/exception'
-import { HttpStatusCodes } from '@util/exceptions/http.exception'
+import { HttpStatusCodes } from '@util/http/status-code'
 import { ResultException } from '@util/exceptions/result.exception'
 
 export class DatabaseException extends ResultException {

@@ -1,15 +1,16 @@
-import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
-import { UserPropSelect } from '@modules/user/repository/repository'
-import { ZodValidateService } from '@services/zod'
 import { Injectable } from '@nestjs/common'
-import { HashEsliph, HttpEsliph, Result } from '@esliph/util-node'
-import { z } from 'zod'
-import { IsNotEmpty } from 'class-validator'
+import { HashEsliph, Result } from '@esliph/util-node'
 import { JwtService } from '@nestjs/jwt'
+import { IsNotEmpty } from 'class-validator'
+import { z } from 'zod'
+import { UseCase } from '@common/use-case'
+import { ZodValidateService } from '@services/zod'
 import { AuthenticationJWT } from '@@types/auth'
+import { UserPropSelect } from '@modules/user/repository/repository'
 import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
-import ResultException from '@util/exceptions/result.exception'
 import { UserUpdateRepositoryAbstract } from '@modules/user/repository/update.repository'
+import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
+import { ResultException } from '@util/exceptions/result.exception'
 
 export class AuthSignInUseCaseDTO {
     @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.LOGIN_IS_EMPTY })
@@ -42,12 +43,14 @@ export type AuthSignInUseCasePerformResponseValue = {
 export type AuthSignInUseCasePerformResponse = Promise<Result<AuthSignInUseCasePerformResponseValue>>
 
 @Injectable()
-export class AuthSignInUseCase {
+export class AuthSignInUseCase extends UseCase {
     constructor(
         private readonly findUserUniqueRepository: UserFindUniqueRepositoryAbstract,
         private readonly userUpdateRepository: UserUpdateRepositoryAbstract,
         private readonly jwtService: JwtService
-    ) { }
+    ) {
+        super()
+    }
 
     async perform(signInArgs: AuthSignInUseCaseArgs): AuthSignInUseCasePerformResponse {
         try {
@@ -55,10 +58,7 @@ export class AuthSignInUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'User sign in', message: [{ message: 'Cannot sign in' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'User sign in', message: 'Cannot sign in' })
         }
     }
 
@@ -75,7 +75,8 @@ export class AuthSignInUseCase {
 
         const token = await this.generateToken({
             sub: user.id,
-            username: user.username, email: user.email
+            username: user.username,
+            email: user.email
         })
 
         await this.updateUserLogged({ id: user.id })
@@ -102,13 +103,11 @@ export class AuthSignInUseCase {
             return responseFindUserByUsername
         }
 
-        throw new ResultException<UserPropsSelectedType>(
-            {
-                title: 'Sign In user',
-                message: [{ message: '"Login" or "Password" incorrect', origin: 'login;password' }]
-            },
-            HttpEsliph.HttpStatusCodes.BAD_REQUEST
-        )
+        throw new ResultException({
+            title: 'Sign In user',
+            causes: [{ message: '"Login" or "Password" incorrect', origin: 'login;password' }],
+            message: 'Incorrect credentials'
+        })
     }
 
     private async findUserByEmail(email: string) {
@@ -136,13 +135,11 @@ export class AuthSignInUseCase {
         const validPassword = await HashEsliph.compareHashWithRef(passwordHashed, passwordArg)
 
         if (!validPassword) {
-            throw new ResultException<UserPropsSelectedType>(
-                {
-                    title: 'Sign In user',
-                    message: [{ message: '"Login" or "Password" incorrect', origin: 'login;password' }]
-                },
-                HttpEsliph.HttpStatusCodes.BAD_REQUEST
-            )
+            throw new ResultException({
+                title: 'Sign In user',
+                causes: [{ message: '"Login" or "Password" incorrect', origin: 'login;password' }],
+                message: 'Incorrect credentials'
+            })
         }
 
         return validPassword
@@ -158,7 +155,7 @@ export class AuthSignInUseCase {
         const responseUserLogged = await this.userUpdateRepository.perform({ where: { id: args.id }, data: { online: true } })
 
         if (!responseUserLogged.isSuccess) {
-            throw new ResultException<UserPropsSelectedType>(responseUserLogged.getError(), responseUserLogged.getStatus())
+            throw new ResultException(responseUserLogged.getError(), responseUserLogged.getStatus())
         }
     }
 }

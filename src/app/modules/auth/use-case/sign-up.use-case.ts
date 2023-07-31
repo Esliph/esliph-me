@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
 import { UserEntitySimple } from '@modules/user/schema'
@@ -7,7 +7,8 @@ import { IsNotEmpty } from 'class-validator'
 import { UserCreateRepositoryAbstract } from '@modules/user/repository/create.repository'
 import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
 import { USER_REGEX } from '@util/regex'
-import ResultException from '@util/exceptions/result.exception'
+import { HttpStatusCodes } from '@util/http/status-code'
+import { UseCase } from '@common/use-case'
 
 export class AuthSignUpUseCaseDTO {
     @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.USERNAME_IS_EMPTY })
@@ -45,8 +46,10 @@ export type AuthSignUpUseCasePerformResponseValue = { success: string }
 export type AuthSignUpUseCasePerformResponse = Promise<Result<AuthSignUpUseCasePerformResponseValue>>
 
 @Injectable()
-export class AuthSignUpUseCase {
-    constructor(private readonly createUserRepository: UserCreateRepositoryAbstract) { }
+export class AuthSignUpUseCase extends UseCase {
+    constructor(private readonly createUserRepository: UserCreateRepositoryAbstract) {
+        super()
+    }
 
     async perform(createArgs: AuthSignUpUseCaseArgs): AuthSignUpUseCasePerformResponse {
         try {
@@ -54,11 +57,7 @@ export class AuthSignUpUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-
-            return Result.failure({ title: 'Auth Sign Up', message: [{ message: 'Cannot sign up' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Auth Sign Up', message: 'Cannot sign up' })
         }
     }
 
@@ -74,10 +73,13 @@ export class AuthSignUpUseCase {
         const performCreateUserRepositoryResult = await this.performCreateUserRepository(userEntityTable)
 
         if (!performCreateUserRepositoryResult.isSuccess()) {
-            return Result.failure<AuthSignUpUseCasePerformResponseValue>(performCreateUserRepositoryResult.getError(), performCreateUserRepositoryResult.getStatus())
+            return Result.failure<AuthSignUpUseCasePerformResponseValue>(
+                performCreateUserRepositoryResult.getError(),
+                performCreateUserRepositoryResult.getStatus()
+            )
         }
 
-        return Result.success<AuthSignUpUseCasePerformResponseValue>({ success: 'User sign up successfully' }, HttpEsliph.HttpStatusCodes.CREATED)
+        return Result.success<AuthSignUpUseCasePerformResponseValue>({ success: 'User sign up successfully' }, HttpStatusCodes.CREATED)
     }
 
     private validateArgsProps(createArgs: AuthSignUpUseCaseArgs) {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
-import ResultException from '@util/exceptions/result.exception'
+import { UseCase } from '@common/use-case'
 import { PrivilegePropSelect } from '@modules/privilege/repository/repository'
 import { PrivilegeFindUniqueRepositoryAbstract } from '@modules/privilege/repository/find.repository'
 
@@ -22,8 +22,10 @@ export type PrivilegeFindOneUseCasePerformResponseValue = { privilege: Privilege
 export type PrivilegeFindOneUseCasePerformResponse = Promise<Result<PrivilegeFindOneUseCasePerformResponseValue>>
 
 @Injectable()
-export class PrivilegeFindOneUseCase {
-    constructor(private readonly findPrivilegeRepository: PrivilegeFindUniqueRepositoryAbstract) { }
+export class PrivilegeFindOneUseCase extends UseCase {
+    constructor(private readonly findPrivilegeRepository: PrivilegeFindUniqueRepositoryAbstract) {
+        super()
+    }
 
     async perform(findArgs: PrivilegeFindOneUseCaseArgs): PrivilegeFindOneUseCasePerformResponse {
         try {
@@ -31,10 +33,7 @@ export class PrivilegeFindOneUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Find Privilege', message: [{ message: 'Cannot find privilege' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Find Privilege', message: 'Cannot find privilege' })
         }
     }
 

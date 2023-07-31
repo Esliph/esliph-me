@@ -7,16 +7,25 @@ import { UserDeleteUseCaseDTO } from '@modules/user/use-case/delete.use-case'
 import { UserCreateUseCaseDTO } from '@modules/user/use-case/create.use-case'
 import { Privilege } from '@util/decorators/privilege.decorator'
 import { UserPrivileges } from '@modules/user/user.privileges'
+import { ErrorType } from '@@types/error'
+import { Application } from '@core'
 
 @Privilege(UserPrivileges.Parent)
 @Controller('/users')
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+    constructor(private readonly userService: UserService) {}
 
     @Privilege(UserPrivileges.List)
     @Get('/')
     async getUsers(@Res() res: Response) {
         const response = await this.userService.getUsers({})
+
+        if (!response.isSuccess()) {
+            Application.emit('error', {
+                ...response.getError(),
+                type: ErrorType.HttpRequest
+            })
+        }
 
         return res.status(response.getStatus()).send(response.getResponse())
     }
@@ -26,6 +35,13 @@ export class UserController {
     async getUser(@Param('id') id: string, @Res() res: Response) {
         const response = await this.userService.getUser({ id })
 
+        if (!response.isSuccess()) {
+            Application.emit('error', {
+                ...response.getError(),
+                type: ErrorType.HttpRequest
+            })
+        }
+
         return res.status(response.getStatus()).send(response.getResponse())
     }
 
@@ -33,6 +49,13 @@ export class UserController {
     @Post('/create')
     async create(@Body() body: UserCreateUseCaseDTO, @Res() res: Response) {
         const response = await this.userService.create({ ...body })
+
+        if (!response.isSuccess()) {
+            Application.emit('error', {
+                ...response.getError(),
+                type: ErrorType.HttpRequest
+            })
+        }
 
         return res.status(response.getStatus()).send(response.getResponse())
     }
@@ -42,6 +65,13 @@ export class UserController {
     async update(@Param('id') id: string, @Body() body: UserUpdateUseCaseDTO, @Res() res: Response) {
         const response = await this.userService.update({ id, ...body })
 
+        if (!response.isSuccess()) {
+            Application.emit('error', {
+                ...response.getError(),
+                type: ErrorType.HttpRequest
+            })
+        }
+
         return res.status(response.getStatus()).send(response.getResponse())
     }
 
@@ -49,6 +79,13 @@ export class UserController {
     @Delete('/delete/:id')
     async delete(@Param('id') id: string, @Body() body: UserDeleteUseCaseDTO, @Res() res: Response) {
         const response = await this.userService.delete({ id, ...body })
+
+        if (!response.isSuccess()) {
+            Application.emit('error', {
+                ...response.getError(),
+                type: ErrorType.HttpRequest
+            })
+        }
 
         return res.status(response.getStatus()).send(response.getResponse())
     }

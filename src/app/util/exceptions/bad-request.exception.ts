@@ -1,5 +1,6 @@
 import { ExceptionArgs } from '@util/exceptions/exception'
-import { HttpException, HttpStatusCodes } from '@util/exceptions/http.exception'
+import { HttpException } from '@util/exceptions/http.exception'
+import { HttpStatusCodes } from '@util/http/status-code'
 
 const ERROR_INFO_DEFAULT: ExceptionArgs = {
     title: 'Requisition',
@@ -7,7 +8,15 @@ const ERROR_INFO_DEFAULT: ExceptionArgs = {
 }
 
 export class BadRequestException extends HttpException {
-    constructor({ message = ERROR_INFO_DEFAULT.message, title = ERROR_INFO_DEFAULT.title, causes = ERROR_INFO_DEFAULT.causes, description = ERROR_INFO_DEFAULT.description }: Omit<ExceptionArgs, 'message'> & Partial<{ message?: string }>) {
-        super({ message, causes, description, title }, HttpStatusCodes.BAD_REQUEST)
+    constructor(errorInfo?: Partial<Omit<ExceptionArgs, 'message'>> & Partial<{ message?: string }>) {
+        super(
+            {
+                message: errorInfo?.message || ERROR_INFO_DEFAULT.message,
+                causes: errorInfo?.causes || ERROR_INFO_DEFAULT.causes,
+                description: errorInfo?.description || ERROR_INFO_DEFAULT.description,
+                title: errorInfo?.title || ERROR_INFO_DEFAULT.title
+            },
+            HttpStatusCodes.BAD_REQUEST
+        )
     }
 }

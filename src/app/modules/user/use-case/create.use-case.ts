@@ -6,7 +6,7 @@ import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
 import { UserEntitySimple } from '@modules/user/schema'
 import { UserCreateRepositoryAbstract } from '@modules/user/repository/create.repository'
-import { HttpStatusCodes } from '@util/exceptions/http.exception'
+import { HttpStatusCodes } from '@util/http/status-code'
 import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
 import { USER_REGEX } from '@util/regex'
 

@@ -1,4 +1,4 @@
-import { HttpStatusCodes } from '@util/exceptions/http.exception'
+import { HttpStatusCodes } from '@util/http/status-code'
 import { Result } from '@esliph/util-node'
 import { Exception } from '@util/exceptions/exception'
 import { ErrorResultInfo } from '@esliph/util-node/dist/lib/error'

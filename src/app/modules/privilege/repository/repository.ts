@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
-import { DatabaseService } from '@services/database'
+import { Result } from '@esliph/util-node'
+import { DatabaseModel, DatabaseService } from '@services/database'
 import { PrivilegeModelTable } from '@modules/privilege/schema'
 
 type PrivilegeGetPayloadTypes = boolean | null | undefined | { select?: Prisma.PrivilegeSelect | null }
@@ -51,8 +51,8 @@ export abstract class PrivilegeModelTableRepositoryAbstract {
 }
 
 @Injectable()
-export class PrivilegeModelTableRepository implements PrivilegeModelTableRepositoryAbstract {
-    constructor(private readonly repository: DatabaseService) { }
+export class PrivilegeModelTableRepository extends DatabaseModel implements PrivilegeModelTableRepositoryAbstract {
+    constructor(private readonly repository: DatabaseService) { super() }
 
     async create<Args extends PrivilegeCreateArgs>(args: Args) {
         try {
@@ -61,10 +61,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeCreateResponse>({
-                title: 'Register Privilege',
-                message: [{ message: 'Cannot register privilege', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeCreateResponse>(err, { title: 'Register Privilege', message: 'Cannot register privilege' })
         }
     }
 
@@ -75,10 +72,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeCreateManyResponse>({
-                title: 'Register Privileges',
-                message: [{ message: 'Cannot register privileges', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeCreateManyResponse>(err, { title: 'Register Privileges', message: 'Cannot register privileges' })
         }
     }
 
@@ -89,10 +83,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeUpdateResponse>({
-                title: 'Update Privilege',
-                message: [{ message: 'Cannot update privilege', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeUpdateResponse>(err, { title: 'Update Privilege', message: 'Cannot update privilege' })
         }
     }
 
@@ -103,10 +94,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeUpdateManyResponse>({
-                title: 'Update Privileges',
-                message: [{ message: 'Cannot update privileges', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeUpdateManyResponse>(err, { title: 'Update Privileges', message: 'Cannot update privileges' })
         }
     }
 
@@ -116,20 +104,14 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
                 .findFirst(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<PrivilegeFindFirstResponse<Args>>({
-                            title: 'Find Privilege',
-                            message: [{ message: 'Privilege not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<PrivilegeFindFirstResponse<Args>>(res, { title: 'Find Privilege', message: 'Privilege not found' })
                     }
                     return Result.success({ privilege: res })
                 }) as Result<PrivilegeFindFirstResponse<Args>>
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeFindFirstResponse<Args>>({
-                title: 'Find Privilege',
-                message: [{ message: 'Cannot find privilege', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeFindFirstResponse<Args>>(err, { title: 'Find Privilege', message: 'Cannot find privilege' })
         }
     }
 
@@ -139,20 +121,14 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
                 .findFirst(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<PrivilegeExistsResponse>({
-                            title: 'Privilege Exists',
-                            message: [{ message: 'Privilege not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<PrivilegeExistsResponse>(res, { title: 'Privilege Exists', message: 'Privilege not found' })
                     }
                     return Result.success<PrivilegeExistsResponse>(true)
                 })
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeExistsResponse>({
-                title: 'Find Privilege',
-                message: [{ message: 'Cannot find privilege', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeExistsResponse>(err, { title: 'Find Privilege', message: 'Cannot find privilege' })
         }
     }
 
@@ -162,20 +138,14 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
                 .findFirst(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<PrivilegeFindUniqueResponse<Args>>({
-                            title: 'Privilege Privilege',
-                            message: [{ message: 'Privilege not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<PrivilegeFindUniqueResponse<Args>>(res, { title: 'Privilege Privilege', message: 'Privilege not found' })
                     }
                     return Result.success({ privilege: res })
                 }) as Result<PrivilegeFindUniqueResponse<Args>>
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeFindUniqueResponse<Args>>({
-                title: 'Find Privilege',
-                message: [{ message: 'Cannot find privilege', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeFindUniqueResponse<Args>>(err, { title: 'Privilege Privilege', message: 'Privilege not found' })
         }
     }
 
@@ -187,10 +157,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeFindFirstOrThrowResponse<Args>>({
-                title: 'Find Privilege',
-                message: [{ message: 'Cannot find privilege', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeFindFirstOrThrowResponse<Args>>(err, { title: 'Find Privilege', message: 'Cannot find privilege' })
         }
     }
 
@@ -202,10 +169,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeFindUniqueOrThrowResponse<Args>>({
-                title: 'Find Privilege',
-                message: [{ message: 'Cannot find privilege', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeFindUniqueOrThrowResponse<Args>>(err, { title: 'Find Privilege', message: 'Cannot find privilege' })
         }
     }
 
@@ -216,10 +180,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeFindManyResponse<Args>>({
-                title: 'Find Privileges',
-                message: [{ message: 'Cannot find privileges', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeFindManyResponse<Args>>(err, { title: 'Find Privileges', message: 'Cannot find privileges' })
         }
     }
 
@@ -230,10 +191,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeDeleteResponse>({
-                title: 'Remove Privilege',
-                message: [{ message: 'Cannot remove privilege', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeDeleteResponse>(err, { title: 'Remove Privilege', message: 'Cannot remove privilege' })
         }
     }
 
@@ -244,10 +202,7 @@ export class PrivilegeModelTableRepository implements PrivilegeModelTableReposit
 
             return response
         } catch (err: any) {
-            return Result.failure<PrivilegeDeleteManyResponse>({
-                title: 'Remove Privileges',
-                message: [{ message: 'Cannot remove privileges', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<PrivilegeDeleteManyResponse>(err, { title: 'Remove Privileges', message: 'Cannot remove privileges' })
         }
     }
 }

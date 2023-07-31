@@ -1,50 +1,23 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
-import { AuthSignInUseCase, AuthSignInUseCaseArgs } from '@modules/auth/use-case/sign-in.use-case'
-import { AuthSignUpUseCase, AuthSignUpUseCaseArgs } from '@modules/auth/use-case/sign-up.use-case'
-import { AuthValidCredentialsUseCase } from '@modules/auth/use-case/valid-credentials'
+import { AuthSignInUseCase, AuthSignInUseCaseArgs, AuthSignInUseCasePerformResponseValue } from '@modules/auth/use-case/sign-in.use-case'
+import { AuthSignUpUseCase, AuthSignUpUseCaseArgs, AuthSignUpUseCasePerformResponseValue } from '@modules/auth/use-case/sign-up.use-case'
+import { Service } from '@common/service'
 
 @Injectable()
-export class AuthService {
-    constructor(
-        private readonly signUpUC: AuthSignUpUseCase,
-        private readonly signInUC: AuthSignInUseCase,
-        private readonly validCredentials: AuthValidCredentialsUseCase
-    ) { }
+export class AuthService extends Service {
+    constructor(private readonly signUpUC: AuthSignUpUseCase, private readonly signInUC: AuthSignInUseCase) {
+        super()
+    }
 
     async signUp(body: AuthSignUpUseCaseArgs) {
-        try {
-            const response = await this.signUpUC.perform({ ...body })
+        const response = await this.signUpUC.perform({ ...body })
 
-            return response
-        } catch (err) {
-            return Result.failure(
-                { title: 'Auth Sign Up', message: [{ message: 'Cannot sign up', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
+        return response
     }
 
     async signIn(body: AuthSignInUseCaseArgs) {
-        try {
-            const response = await this.signInUC.perform({ ...body })
+        const response = await this.signInUC.perform({ ...body })
 
-            return response
-        } catch (err) {
-            return Result.failure(
-                { title: 'Auth Sign In', message: [{ message: 'Cannot sign in', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
-    }
-
-    async validAuthentication(login: string, password: string) {
-        const response = await this.validCredentials.perform({ login, password })
-
-        if (!response.isSuccess()) {
-            throw response.getError()
-        }
-
-        return response.getValue()
+        return response
     }
 }

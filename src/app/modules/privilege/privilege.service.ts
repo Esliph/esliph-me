@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Service } from '@common/service'
 import { PrivilegeCreateUseCase, PrivilegeCreateUseCaseArgs } from '@modules/privilege/use-case/create.use-case'
 import { PrivilegeFindOneUseCase, PrivilegeFindOneUseCaseArgs } from '@modules/privilege/use-case/find-one.use-case'
 import { PrivilegeListUseCase, PrivilegeListUseCaseArgs } from '@modules/privilege/use-case/list.use-case'
@@ -8,91 +8,51 @@ import { PrivilegeDeleteUseCase, PrivilegeDeleteUseCaseArgs } from '@modules/pri
 import { PrivilegeValidateUseCase, PrivilegeValidateUseCaseArgs } from '@modules/privilege/use-case/validate-privileges.use-case'
 
 @Injectable()
-export class PrivilegeService {
+export class PrivilegeService extends Service {
     constructor(
         private readonly createUC: PrivilegeCreateUseCase,
         private readonly listUC: PrivilegeListUseCase,
         private readonly updateUC: PrivilegeUpdateUseCase,
         private readonly deleteUC: PrivilegeDeleteUseCase,
         private readonly findUC: PrivilegeFindOneUseCase,
-        private readonly validatePrivilegeUC: PrivilegeValidateUseCase,
-    ) { }
+        private readonly validatePrivilegeUC: PrivilegeValidateUseCase
+    ) {
+        super()
+    }
 
     async getPrivileges(body?: PrivilegeListUseCaseArgs) {
-        try {
-            const response = await this.listUC.perform({ ...body })
+        const response = await this.listUC.perform({ ...body })
 
-            return response
-        } catch (err) {
-            return Result.failure(
-                { title: 'List Privileges', message: [{ message: 'Cannot get list privileges', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
+        return response
     }
 
     async getPrivilege(body: PrivilegeFindOneUseCaseArgs) {
-        try {
-            const response = await this.findUC.perform({ ...body })
+        const response = await this.findUC.perform({ ...body })
 
-            return response
-        } catch (err) {
-            return Result.failure(
-                { title: 'Find Privilege', message: [{ message: 'Cannot get privilege', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
+        return response
     }
 
     async create(body: PrivilegeCreateUseCaseArgs) {
-        try {
-            const response = await this.createUC.perform({ ...body })
+        const response = await this.createUC.perform({ ...body })
 
-            return response
-        } catch (err: any) {
-            return Result.failure(
-                { title: 'Create Privilege', message: [{ message: 'Cannot create privilege', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
+        return response
     }
 
     async update(body: PrivilegeUpdateUseCaseArgs) {
-        try {
-            const response = await this.updateUC.perform({ ...body })
+        const response = await this.updateUC.perform({ ...body })
 
-            return response
-        } catch (err: any) {
-            return Result.failure(
-                { title: 'Update Privilege', message: [{ message: 'Cannot update privilege', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
+        return response
     }
 
     async delete(body: PrivilegeDeleteUseCaseArgs) {
-        try {
-            const response = await this.deleteUC.perform({ ...body })
+        const response = await this.deleteUC.perform({ ...body })
 
-            return response
-        } catch (err: any) {
-            return Result.failure(
-                { title: 'Delete Privilege', message: [{ message: 'Cannot delete privilege', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
+        return response
     }
 
     async validatePrivilege(body: PrivilegeValidateUseCaseArgs) {
-        try {
-            const response = await this.validatePrivilegeUC.perform({ ...body })
+        const response = await this.validatePrivilegeUC.perform({ ...body })
 
-            return response
-        } catch (err) {
-            return Result.failure(
-                { title: 'Validate Privileges', message: [{ message: 'Cannot validate privileges', origin: 'ServerAPI' }] },
-                HttpEsliph.HttpStatusCodes.INTERNAL_SERVER_ERROR
-            )
-        }
+        return response
     }
 }

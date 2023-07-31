@@ -35,7 +35,7 @@ export class UserListUseCase extends UseCase {
 
             return responsePerform
         } catch (err: any) {
-            return this.extractError(err, { title: 'Create User', message: 'Cannot create user' })
+            return this.extractError(err, { title: 'List Users', message: 'Cannot list users' })
         }
     }
 

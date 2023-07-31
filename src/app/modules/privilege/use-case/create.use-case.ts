@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
-import { IsNotEmpty } from 'class-validator'
 import { ZodValidateService } from '@services/zod'
-import ResultException from '@util/exceptions/result.exception'
+import { UseCase } from '@common/use-case'
 import { PrivilegeEntitySimple } from '@modules/privilege/schema'
+import { HttpStatusCodes } from '@util/http/status-code'
 import { PrivilegeCreateRepositoryAbstract } from '@modules/privilege/repository/create.repository'
 
 export class PrivilegeCreateUseCaseDTO {
@@ -21,8 +21,10 @@ export type PrivilegeCreateUseCasePerformResponseValue = { success: string }
 export type PrivilegeCreateUseCasePerformResponse = Promise<Result<PrivilegeCreateUseCasePerformResponseValue>>
 
 @Injectable()
-export class PrivilegeCreateUseCase {
-    constructor(private readonly createPrivilegeRepository: PrivilegeCreateRepositoryAbstract) { }
+export class PrivilegeCreateUseCase extends UseCase {
+    constructor(private readonly createPrivilegeRepository: PrivilegeCreateRepositoryAbstract) {
+        super()
+    }
 
     async perform(createArgs: PrivilegeCreateUseCaseArgs): PrivilegeCreateUseCasePerformResponse {
         try {
@@ -30,11 +32,7 @@ export class PrivilegeCreateUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-
-            return Result.failure({ title: 'Create Privilege', message: [{ message: 'Cannot create privilege' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Create Privilege', message: 'Cannot create privilege' })
         }
     }
 
@@ -51,7 +49,7 @@ export class PrivilegeCreateUseCase {
             return Result.failure(performCreatePrivilegeRepositoryResult.getError(), performCreatePrivilegeRepositoryResult.getStatus())
         }
 
-        return Result.success({ success: 'Privilege create successfully' }, HttpEsliph.HttpStatusCodes.CREATED)
+        return Result.success({ success: 'Privilege create successfully' }, HttpStatusCodes.CREATED)
     }
 
     private validateArgsProps(createArgs: PrivilegeCreateUseCaseArgs) {

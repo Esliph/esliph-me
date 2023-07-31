@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
+import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
-import ResultException from '@util/exceptions/result.exception'
 import { PrivilegeDeleteRepositoryAbstract } from '@modules/privilege/repository/delete.repository'
 
 export class PrivilegeDeleteUseCaseDTO {
@@ -17,8 +17,10 @@ export type PrivilegeDeleteUseCasePerformResponseValue = boolean
 export type PrivilegeDeleteUseCasePerformResponse = Promise<Result<PrivilegeDeleteUseCasePerformResponseValue>>
 
 @Injectable()
-export class PrivilegeDeleteUseCase {
-    constructor(private readonly deletePrivilegeRepository: PrivilegeDeleteRepositoryAbstract) { }
+export class PrivilegeDeleteUseCase extends UseCase {
+    constructor(private readonly deletePrivilegeRepository: PrivilegeDeleteRepositoryAbstract) {
+        super()
+    }
 
     async perform(deleteArgs: PrivilegeDeleteUseCaseArgs): PrivilegeDeleteUseCasePerformResponse {
         try {
@@ -26,10 +28,7 @@ export class PrivilegeDeleteUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Delete Privilege', message: [{ message: 'Cannot delete privilege' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Delete Privilege', message: 'Cannot delete privilege' })
         }
     }
 

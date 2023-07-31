@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
+import { HttpStatusCodes } from '@util/http/status-code'
+import { UseCase } from '@common/use-case'
 import { PrivilegeAccess, PrivilegeOperational } from '@modules/privilege/operational/controller'
-import ResultException from '@util/exceptions/result.exception'
 import { PrivilegeModel } from '@@types/privileges'
 import { ForbiddenException } from '@util/exceptions/forbidden.exception'
 
@@ -17,8 +18,10 @@ export type PrivilegeValidateUseCasePerformResponseValue = { success: string }
 export type PrivilegeValidateUseCasePerformResponse = Promise<Result<PrivilegeValidateUseCasePerformResponseValue>>
 
 @Injectable()
-export class PrivilegeValidateUseCase {
-    constructor() { }
+export class PrivilegeValidateUseCase extends UseCase {
+    constructor() {
+        super()
+    }
 
     async perform(validateArgs: PrivilegeValidateUseCaseArgs): PrivilegeValidateUseCasePerformResponse {
         try {
@@ -26,11 +29,7 @@ export class PrivilegeValidateUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-
-            return Result.failure({ title: 'Validate Privileges', message: [{ message: 'Cannot validate privileges' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Validate Privileges', message: 'Cannot validate privileges' })
         }
     }
 
@@ -42,14 +41,14 @@ export class PrivilegeValidateUseCase {
         const allPrivilegesForValid = PrivilegeOperational.getPrivilegesByName(validatePrivilegeData.privileges)
 
         if (allPrivilegesForValid.length == 0) {
-            return Result.success({ success: 'Privilege validate successfully' }, HttpEsliph.HttpStatusCodes.OK)
+            return Result.success({ success: 'Privilege validate successfully' }, HttpStatusCodes.OK)
         }
 
         this.validPrivilegesGlobal(PrivilegeOperational.filterByTypeInPrivileges(allPrivilegesForValid, PrivilegeAccess.Global))
         this.validPrivilegesUser(validatePrivilegeData.id, PrivilegeOperational.filterByTypeInPrivileges(allPrivilegesForValid, PrivilegeAccess.User))
         this.validPrivilegesRoot(validatePrivilegeData.id, PrivilegeOperational.filterByTypeInPrivileges(allPrivilegesForValid, PrivilegeAccess.Root))
 
-        return Result.success({ success: 'Privilege validate successfully' }, HttpEsliph.HttpStatusCodes.OK)
+        return Result.success({ success: 'Privilege validate successfully' }, HttpStatusCodes.OK)
     }
 
     private validateArgsProps(validateArgs: PrivilegeValidateUseCaseArgs) {
@@ -60,7 +59,9 @@ export class PrivilegeValidateUseCase {
 
     private validPrivilegesGlobal(privileges: PrivilegeModel[]) {
         for (const privilege of privileges) {
-            if (!VALID_GLOBAL_PRIVILEGES[privilege.name]) { continue }
+            if (!VALID_GLOBAL_PRIVILEGES[privilege.name]) {
+                continue
+            }
 
             if (!VALID_GLOBAL_PRIVILEGES[privilege.name]()) {
                 throw new ForbiddenException()
@@ -72,13 +73,11 @@ export class PrivilegeValidateUseCase {
         throw new ForbiddenException()
     }
 
-    private validPrivilegesRoot(id: number, privileges: PrivilegeModel[]) {
-
-    }
+    private validPrivilegesRoot(id: number, privileges: PrivilegeModel[]) {}
 }
 
 const VALID_GLOBAL_PRIVILEGES = {
     'public': () => true,
     'ignore': () => false,
-    'private': () => false,
+    'private': () => false
 }

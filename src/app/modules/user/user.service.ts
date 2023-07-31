@@ -19,52 +19,32 @@ export class UserService extends Service {
     }
 
     async getUsers(body?: UserListUseCaseArgs) {
-        try {
-            const response = await this.listUC.perform({ ...body })
+        const response = await this.listUC.perform({ ...body })
 
-            return response
-        } catch (err) {
-            return this.extractError(err, { title: 'List Users', message: 'Cannot get list users' })
-        }
+        return response
     }
 
     async getUser(body: UserFindOneUseCaseArgs) {
-        try {
-            const response = await this.findUC.perform({ ...body })
+        const response = await this.findUC.perform({ ...body })
 
-            return response
-        } catch (err) {
-            return this.extractError(err, { title: 'Find User', message: 'Cannot get user' })
-        }
+        return response
     }
 
     async create(body: UserCreateUseCaseArgs) {
-        try {
-            const response = await this.createUC.perform({ ...body })
+        const response = await this.createUC.perform({ ...body })
 
-            return response
-        } catch (err: any) {
-            return this.extractError(err, { title: 'Create User', message: 'Cannot create user' })
-        }
+        return response
     }
 
     async update(body: UserUpdateUseCaseArgs) {
-        try {
-            const response = await this.updateUC.perform({ ...body })
+        const response = await this.updateUC.perform({ ...body })
 
-            return response
-        } catch (err: any) {
-            return this.extractError(err, { title: 'Update User', message: 'Cannot update user' })
-        }
+        return response
     }
 
     async delete(body: UserDeleteUseCaseArgs) {
-        try {
-            const response = await this.deleteUC.perform({ ...body })
+        const response = await this.deleteUC.perform({ ...body })
 
-            return response
-        } catch (err: any) {
-            return this.extractError(err, { title: 'Delete User', message: 'Cannot delete user' })
-        }
+        return response
     }
 }
