@@ -39,7 +39,7 @@
     },
     "dependencies": {
         "@esliph/cli": "^1.0.1",
-        "@esliph/util-node": "^1.0.34",
+        "@esliph/util-node": "^1.0.35",
         "@fastify/compress": "^6.4.0",
         "@fastify/cookie": "^8.3.0",
         "@fastify/csrf-protection": "^6.3.0",

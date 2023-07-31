@@ -48,7 +48,7 @@ export class Application {
 
     private static initObserver() {
         this.on('error', err => {
-            console.log(err)
+            console.log('!', err)
         })
     }
 
@@ -86,7 +86,6 @@ export class Application {
             | Promise<{ default: FastifyPluginAsync<Options> }>,
         opts?: FastifyRegisterOptions<Options>
     ) {
-        // @ts-expect-error
         await this.appNest.register(plugin, opts)
     }
 

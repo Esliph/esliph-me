@@ -4,6 +4,7 @@ import { IsOptional } from 'class-validator'
 import { z } from 'zod'
 import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
+import { HttpStatusCodes } from '@util/http/status-code'
 import { UserEntityTable } from '@modules/user/schema'
 import { UserPropSelect } from '@modules/user/repository/repository'
 import { UserUpdateRepositoryAbstract } from '@modules/user/repository/update.repository'
@@ -70,7 +71,7 @@ export class UserUpdateUseCase extends UseCase {
             return Result.failure(performUpdateRepositoryResult.getError(), performUpdateRepositoryResult.getStatus())
         }
 
-        return Result.success({ success: 'User update successfully' }, HttpEsliph.HttpStatusCodes.OK)
+        return Result.success({ success: 'User update successfully' }, HttpStatusCodes.OK)
     }
 
     private async findUserToBeUpdated(args: { id: number }) {

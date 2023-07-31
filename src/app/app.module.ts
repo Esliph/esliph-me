@@ -28,24 +28,13 @@ const AppModuleDependencies: Provider[] = [
 ]
 
 @Module({
-    imports: [
-        ScheduleModule.forRoot(),
-        UserModule,
-        AuthModule,
-        PrivilegeModule
-    ],
-    controllers: [
-        AppController
-    ],
-    providers: [
-        AppService,
-        ...AppModuleDependencies,
-        ...AppModuleServices,
-    ],
+    imports: [ScheduleModule.forRoot(), UserModule, AuthModule, PrivilegeModule],
+    controllers: [AppController],
+    providers: [AppService, ...AppModuleDependencies, ...AppModuleServices],
     exports: [...AppModuleServices]
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(GlobalMiddleware).forRoutes('*')
+        // consumer.apply(GlobalMiddleware).forRoutes('*')
     }
 }

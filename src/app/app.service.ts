@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common'
-import { Result, HttpEsliph } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
+import { HttpStatusCodes } from '@util/http/status-code'
 
 @Injectable()
 export class AppService {
-    constructor() { }
+    constructor() {}
 
     home() {
-        return Result.success({ ok: true }, HttpEsliph.HttpStatusCodes.OK)
+        return Result.success({ ok: true }, HttpStatusCodes.OK)
     }
 
     pingPong() {
-        return Result.success({ ping: 'pong' }, HttpEsliph.HttpStatusCodes.OK)
+        return Result.success({ ping: 'pong' }, HttpStatusCodes.OK)
     }
 }
