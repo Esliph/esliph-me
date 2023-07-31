@@ -11,6 +11,13 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
     }
 
     async canActivate(context: ExecutionContext) {
+        await this.canActivePrivilege(context)
+        // await this.canActiveSuper(context)
+
+        return true
+    }
+
+    private async canActivePrivilege(context: ExecutionContext) {
         const privileges = PrivilegeOperational.extractPrivilegesOfContext(context)
 
         const responseValidatePrivilege = await this.privilegeService.validatePrivilege({
@@ -21,16 +28,18 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
         if (!responseValidatePrivilege.isSuccess()) {
             throw new UnauthorizedException(responseValidatePrivilege.getError())
         }
+    }
 
+    private async canActiveSuper(context: ExecutionContext) {
         const canActivate = super.canActivate(context)
 
         if (typeof canActivate === 'boolean' && canActivate) {
-            return true
+            return
         }
 
         const canActivatePromise = canActivate as Promise<boolean>
 
-        return canActivatePromise.catch(err => {
+        await canActivatePromise.catch(err => {
             throw new UnauthorizedException()
         })
     }
