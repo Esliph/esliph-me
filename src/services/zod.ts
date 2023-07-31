@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { z } from 'zod'
 import { Result } from '@esliph/util-node'
 import { ResultException } from '@util/exceptions/result.exception'
-import { Application } from '../core'
+import { Application } from '@core'
 import { ErrorType } from '@@types/error'
 
 @Injectable()

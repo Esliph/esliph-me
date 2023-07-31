@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
 import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
-import { UserPropSelect } from '../repository/repository'
+import { UserPropSelect } from '@modules/user/repository/repository'
 
 export class UserFindOneUseCaseDTO {}
 

@@ -1,5 +1,4 @@
 import { PrivilegeOperational } from '@modules/privilege/operational/controller'
-import { PrivilegeModel } from '@@types/privileges'
 import { ExecutionContext, Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { UnauthorizedException } from '@util/exceptions/unauthorized.exception'
@@ -7,9 +6,7 @@ import { PrivilegeService } from '@modules/privilege/privilege.service'
 
 @Injectable()
 export class AuthenticationGuard extends AuthGuard('jwt') {
-    constructor(
-        private readonly privilegeService: PrivilegeService
-    ) {
+    constructor(private readonly privilegeService: PrivilegeService) {
         super()
     }
 
@@ -37,9 +34,5 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
             console.log(err)
             throw new UnauthorizedException()
         })
-    }
-
-    private validPrivilegesGlobal(privilegesGlobal: PrivilegeModel[]) {
-
     }
 }
