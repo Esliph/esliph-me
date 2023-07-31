@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { DatabaseModel, DatabaseService } from '@services/database'
 import { UserModelTable } from '@modules/user/schema'
 

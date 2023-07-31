@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
+import { IsNotEmpty } from 'class-validator'
 import { z } from 'zod'
 import { ZodValidateService } from '@services/zod'
+import { UseCase } from '@util/common/use-case'
+import { HttpStatusCodes } from '@util/exceptions/http.exception'
 import { UserEntitySimple } from '@modules/user/schema'
-import { IsNotEmpty } from 'class-validator'
 import { UserCreateRepositoryAbstract } from '@modules/user/repository/create.repository'
 import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
 import { USER_REGEX } from '@util/regex'
-import ResultException from '@util/exceptions/result.exception'
 
 export class UserCreateUseCaseDTO {
     @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.USERNAME_IS_EMPTY })
@@ -45,8 +46,8 @@ export type UserCreateUseCasePerformResponseValue = { success: string }
 export type UserCreateUseCasePerformResponse = Promise<Result<UserCreateUseCasePerformResponseValue>>
 
 @Injectable()
-export class UserCreateUseCase {
-    constructor(private readonly createUserRepository: UserCreateRepositoryAbstract) { }
+export class UserCreateUseCase extends UseCase {
+    constructor(private readonly createUserRepository: UserCreateRepositoryAbstract) { super() }
 
     async perform(createArgs: UserCreateUseCaseArgs): UserCreateUseCasePerformResponse {
         try {
@@ -54,11 +55,7 @@ export class UserCreateUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-
-            return Result.failure({ title: 'Create User', message: [{ message: 'Cannot create user' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Create User', message: 'Cannot create user' })
         }
     }
 
@@ -77,7 +74,7 @@ export class UserCreateUseCase {
             return Result.failure(performCreateUserRepositoryResult.getError(), performCreateUserRepositoryResult.getStatus())
         }
 
-        return Result.success({ success: 'User create successfully' }, HttpEsliph.HttpStatusCodes.CREATED)
+        return Result.success({ success: 'User create successfully' }, HttpStatusCodes.CREATED)
     }
 
     private validateArgsProps(createArgs: UserCreateUseCaseArgs) {
