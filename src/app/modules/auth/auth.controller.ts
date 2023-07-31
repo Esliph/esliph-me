@@ -1,5 +1,5 @@
 import { GlobalPrivileges } from '@modules/privilege/global.privileges'
-import { AppCore } from '@core'
+import { Application } from '@core'
 import { Controller, Post } from '@nestjs/common'
 import { Body, Req, Res } from '@nestjs/common/decorators'
 import { Response } from '@@types/http'
@@ -10,7 +10,7 @@ import { Privilege } from '@util/decorators/privilege.decorator'
 
 @Controller('/auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) { }
+    constructor(private readonly authService: AuthService) {}
 
     @Privilege(GlobalPrivileges.Public)
     @Post('/sign-up')
@@ -18,7 +18,7 @@ export class AuthController {
         const response = await this.authService.signUp({ ...body })
 
         if (!response.isSuccess()) {
-            AppCore.emit('error', {
+            Application.emit('error', {
                 ...response.getError(),
                 origin: 'AuthController:SignUp'
             })
@@ -33,7 +33,7 @@ export class AuthController {
         const response = await this.authService.signIn({ ...body })
 
         if (!response.isSuccess()) {
-            AppCore.emit('error', {
+            Application.emit('error', {
                 ...response.getError(),
                 origin: 'AuthController:SignIn'
             })

@@ -15,17 +15,17 @@ import { OPTIONS_NEST_APPLICATION } from '@config/nest'
 const OBSERVER_CONTEXT = 'AppServer'
 const PORT = getEnv({ name: 'PORT', defaultValue: 8080 })
 
-export class AppCore {
+export class Application {
     private static appNest: NestFastifyApplication
     private static observer: ObserverEvent<typeof OBSERVER_CONTEXT, AppEvents>
     private static console: ConsoleLogger
 
     static async factory() {
-        await this.createAppCore()
+        await this.createApplication()
         await this.initComponents()
     }
 
-    private static async createAppCore() {
+    private static async createApplication() {
         const { console, appNest, observer } = await this.createAppAndConsoleAndObserver()
 
         this.appNest = appNest
@@ -47,7 +47,7 @@ export class AppCore {
     }
 
     private static initObserver() {
-        AppCore.on('error', err => {
+        this.on('error', err => {
             console.log(err)
         })
     }
@@ -69,7 +69,6 @@ export class AppCore {
 
         const url = await this.getUrl()
 
-
         this.console.log(`Server running on node environment=${getEnv({ name: 'NODE_ENV', defaultValue: 'local' })} on ${url}\n`)
     }
 
@@ -79,7 +78,14 @@ export class AppCore {
         return url
     }
 
-    private static async registerInApp<Options extends FastifyPluginOptions = any>(plugin: FastifyPluginCallback<Options> | FastifyPluginAsync<Options> | Promise<{ default: FastifyPluginCallback<Options> }> | Promise<{ default: FastifyPluginAsync<Options> }>, opts?: FastifyRegisterOptions<Options>) {
+    private static async registerInApp<Options extends FastifyPluginOptions = any>(
+        plugin:
+            | FastifyPluginCallback<Options>
+            | FastifyPluginAsync<Options>
+            | Promise<{ default: FastifyPluginCallback<Options> }>
+            | Promise<{ default: FastifyPluginAsync<Options> }>,
+        opts?: FastifyRegisterOptions<Options>
+    ) {
         // @ts-expect-error
         await this.appNest.register(plugin, opts)
     }
@@ -93,18 +99,18 @@ export class AppCore {
     }
 
     static log(message: any, context: any) {
-        AppCore.console.log(message, null, { context: `[${context}]` })
+        this.console.log(message, null, { context: `[${context}]` })
     }
 
     static error(message: any, context: any) {
-        AppCore.console.error(message, null, { context: `[${context}]` })
+        this.console.error(message, null, { context: `[${context}]` })
     }
 
     static warn(message: any, context: any) {
-        AppCore.console.warn(message, null, { context: `[${context}]` })
+        this.console.warn(message, null, { context: `[${context}]` })
     }
 
     static debug?(message: any, context: any) {
-        AppCore.console.info(message, null, { context: `[${context}]` })
+        this.console.info(message, null, { context: `[${context}]` })
     }
 }

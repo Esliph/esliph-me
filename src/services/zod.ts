@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { z } from 'zod'
 import { Result } from '@esliph/util-node'
 import { ResultException } from '@util/exceptions/result.exception'
-import { AppCore } from '../core'
+import { Application } from '../core'
 import { ErrorType } from '@@types/error'
 
 @Injectable()
@@ -15,12 +15,12 @@ export class ZodValidateService {
         } catch (err: any) {
             const resultError = ZodValidateService.getPerformError(err)
 
-            AppCore.emit('error', {
+            Application.emit('error', {
                 title: resultError.getError().title,
                 message: resultError.getError().message,
                 causes: resultError.getError().causes,
                 description: resultError.getError().description,
-                type: ErrorType.ValidateData,
+                type: ErrorType.ValidateData
             })
 
             throw new ResultException(resultError.getError())
@@ -32,7 +32,11 @@ export class ZodValidateService {
             return ZodValidateService.getPerformErrorIfInstanceofZodError(err)
         }
 
-        return Result.failure<z.output<ZodSchema>>({ title: 'Data Formatting and Validation', message: 'Invalid data', causes: [{ message: err, origin: 'FormatData' }] })
+        return Result.failure<z.output<ZodSchema>>({
+            title: 'Data Formatting and Validation',
+            message: 'Invalid data',
+            causes: [{ message: err, origin: 'FormatData' }]
+        })
     }
 
     private static getPerformErrorIfInstanceofZodError<ZodSchema extends z.Schema>(err: z.ZodError) {

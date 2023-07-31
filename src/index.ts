@@ -1,7 +1,7 @@
-import { AppCore } from '@core/index'
+import { Application } from '@core/index'
 
 async function bootstrap() {
-    AppCore.factory()
+    Application.factory()
 }
 
 bootstrap()

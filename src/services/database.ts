@@ -3,13 +3,13 @@ import { ErrorType } from '@@types/error'
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { Result, getEnv } from '@esliph/util-node'
-import { AppCore } from '@core'
+import { Application } from '@core'
 import { ErrorResultInfo } from '@esliph/util-node/dist/lib/error'
 
-export abstract class DatabaseService extends PrismaClient { }
+export abstract class DatabaseService extends PrismaClient {}
 
 export class DatabaseModel {
-    extractError<T>(err: any, methodErrorInfo: { title: string, message: string }) {
+    extractError<T>(err: any, methodErrorInfo: { title: string; message: string }) {
         let errorResultInfo: ErrorResultInfo
 
         if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -23,7 +23,10 @@ export class DatabaseModel {
         return Result.failure<T>(errorResultInfo, HttpStatusCodes.BAD_REQUEST)
     }
 
-    private extractErrorIfPrismaClientKnownRequestError<T>(err: Prisma.PrismaClientKnownRequestError, { title, message }: { title: string, message: string }): ErrorResultInfo {
+    private extractErrorIfPrismaClientKnownRequestError<T>(
+        err: Prisma.PrismaClientKnownRequestError,
+        { title, message }: { title: string; message: string }
+    ): ErrorResultInfo {
         const errorResultInfo: ErrorResultInfo = {
             title,
             message,
@@ -33,7 +36,10 @@ export class DatabaseModel {
         return errorResultInfo
     }
 
-    private extractErrorIfPrismaClientUnknownRequestError<T>(err: Prisma.PrismaClientUnknownRequestError, { title, message }: { title: string, message: string }): ErrorResultInfo {
+    private extractErrorIfPrismaClientUnknownRequestError<T>(
+        err: Prisma.PrismaClientUnknownRequestError,
+        { title, message }: { title: string; message: string }
+    ): ErrorResultInfo {
         const errorResultInfo: ErrorResultInfo = {
             title,
             message,
@@ -43,10 +49,10 @@ export class DatabaseModel {
         return errorResultInfo
     }
 
-    private extractErrorUnknown<T>({ title, message }: { title: string, message: string }): ErrorResultInfo {
+    private extractErrorUnknown<T>({ title, message }: { title: string; message: string }): ErrorResultInfo {
         const errorResultInfo: ErrorResultInfo = {
             title,
-            message,
+            message
         }
 
         return errorResultInfo
@@ -72,9 +78,9 @@ export class PrismaService extends DatabaseService implements OnModuleInit, Data
         try {
             await this.$connect()
 
-            AppCore.log('Database connected successfully', 'Database')
+            Application.log('Database connected successfully', 'Database')
         } catch (err: Prisma.PrismaClientInitializationError | any) {
-            AppCore.emit('error', {
+            Application.emit('error', {
                 title: 'Connection Database',
                 message: 'Database connection failed',
                 causes: [{ message: err.message, origin: err.errorCode }],
@@ -91,14 +97,14 @@ export class PrismaService extends DatabaseService implements OnModuleInit, Data
     async enableShutdownHooks(app: INestApplication) {
         // @ts-expect-error
         this.$on('beforeExit', async () => {
-            await AppCore.closeApp()
+            await Application.closeApp()
         })
     }
 
     private initComponent() {
         // @ts-expect-error
         this.$on('error', (ev: any) => {
-            AppCore.emit('error', {
+            Application.emit('error', {
                 title: 'PrismaService',
                 message: ev.message,
                 stack: ev.stack,
@@ -108,15 +114,15 @@ export class PrismaService extends DatabaseService implements OnModuleInit, Data
         })
         // @ts-expect-error
         this.$on('info', (ev: any) => {
-            // AppCore.console.log(ev, null, { context: '[DatabaseEvent]' })
+            // Application.console.log(ev, null, { context: '[DatabaseEvent]' })
         })
         // @ts-expect-error
         this.$on('query', ev => {
-            // AppCore.console.log(ev.message, null, { context: '[DatabaseEvent]' })
+            // Application.console.log(ev.message, null, { context: '[DatabaseEvent]' })
         })
         // @ts-expect-error
         this.$on('warn', (ev: any) => {
-            // AppCore.console.warn(ev.message, null, { context: '[DatabaseEvent]' })
+            // Application.console.warn(ev.message, null, { context: '[DatabaseEvent]' })
         })
     }
 }
