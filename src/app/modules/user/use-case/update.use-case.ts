@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
+import { IsOptional } from 'class-validator'
 import { z } from 'zod'
+import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
 import { UserEntityTable } from '@modules/user/schema'
 import { UserPropSelect } from '@modules/user/repository/repository'
-import { UserUpdateRepositoryAbstract } from '../repository/update.repository'
-import { UserFindUniqueRepositoryAbstract } from '../repository/find.repository'
-import { IsOptional } from 'class-validator'
-import ResultException from '@util/exceptions/result.exception'
+import { UserUpdateRepositoryAbstract } from '@modules/user/repository/update.repository'
+import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
 
 export class UserUpdateUseCaseDTO {
     @IsOptional()
@@ -36,8 +36,10 @@ export type UserUpdateUseCasePerformResponseValue = { success: string }
 export type UserUpdateUseCasePerformResponse = Promise<Result<UserUpdateUseCasePerformResponseValue>>
 
 @Injectable()
-export class UserUpdateUseCase {
-    constructor(private readonly updateUserRepository: UserUpdateRepositoryAbstract, private readonly findUserRepository: UserFindUniqueRepositoryAbstract) { }
+export class UserUpdateUseCase extends UseCase {
+    constructor(private readonly updateUserRepository: UserUpdateRepositoryAbstract, private readonly findUserRepository: UserFindUniqueRepositoryAbstract) {
+        super()
+    }
 
     async perform(updateArgs: UserUpdateUseCaseArgs): UserUpdateUseCasePerformResponse {
         try {
@@ -45,10 +47,7 @@ export class UserUpdateUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Update User', message: [{ message: 'Cannot update user' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Update User', message: 'Cannot update user' })
         }
     }
 
@@ -92,7 +91,7 @@ export class UserUpdateUseCase {
             data: {
                 username: userData.username,
                 email: userData.email,
-                name: userData.name,
+                name: userData.name
             }
         })
 

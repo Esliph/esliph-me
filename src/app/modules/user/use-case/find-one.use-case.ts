@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
+import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
 import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserPropSelect } from '../repository/repository'
-import ResultException from '@util/exceptions/result.exception'
 
-export class UserFindOneUseCaseDTO { }
+export class UserFindOneUseCaseDTO {}
 
 export const UserFindOneUseCaseArgsSchema = ZodValidateService.defaultSchemaModelTable()
 
@@ -24,8 +24,10 @@ export type UserFindOneUseCasePerformResponseValue = { user: UserPropSelect<{ se
 export type UserFindOneUseCasePerformResponse = Promise<Result<UserFindOneUseCasePerformResponseValue>>
 
 @Injectable()
-export class UserFindOneUseCase {
-    constructor(private readonly findUserRepository: UserFindUniqueRepositoryAbstract) { }
+export class UserFindOneUseCase extends UseCase {
+    constructor(private readonly findUserRepository: UserFindUniqueRepositoryAbstract) {
+        super()
+    }
 
     async perform(findArgs: UserFindOneUseCaseArgs): UserFindOneUseCasePerformResponse {
         try {
@@ -33,10 +35,7 @@ export class UserFindOneUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Find User', message: [{ message: 'Cannot find user' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Find User', message: 'Cannot find user' })
         }
     }
 

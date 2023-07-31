@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
+import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
 import { UserFindManyRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserPropSelect } from '@modules/user/repository/repository'
-import ResultException from '@util/exceptions/result.exception'
 
-export class UserListUseCaseDTO {
-    /* Implement the properties that the use case requires in the parameters */
-}
+export class UserListUseCaseDTO {}
 
 export const UserListUseCaseArgsSchema = z.object({})
 
@@ -26,8 +24,10 @@ export type UserListCasePerformResponseValue = { users: UserPropSelect<{ select:
 export type UserListCasePerformResponse = Promise<Result<UserListCasePerformResponseValue>>
 
 @Injectable()
-export class UserListUseCase {
-    constructor(private readonly listUserRepository: UserFindManyRepositoryAbstract) { }
+export class UserListUseCase extends UseCase {
+    constructor(private readonly listUserRepository: UserFindManyRepositoryAbstract) {
+        super()
+    }
 
     async perform(listArgs: UserListUseCaseArgs): UserListCasePerformResponse {
         try {
@@ -35,10 +35,7 @@ export class UserListUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Create User', message: [{ message: 'Cannot create user' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Create User', message: 'Cannot create user' })
         }
     }
 

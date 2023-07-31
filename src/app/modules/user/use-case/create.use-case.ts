@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { Result } from '@esliph/util-node'
 import { IsNotEmpty } from 'class-validator'
 import { z } from 'zod'
+import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
-import { UseCase } from '@util/common/use-case'
-import { HttpStatusCodes } from '@util/exceptions/http.exception'
 import { UserEntitySimple } from '@modules/user/schema'
 import { UserCreateRepositoryAbstract } from '@modules/user/repository/create.repository'
+import { HttpStatusCodes } from '@util/exceptions/http.exception'
 import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
 import { USER_REGEX } from '@util/regex'
 
@@ -47,7 +47,9 @@ export type UserCreateUseCasePerformResponse = Promise<Result<UserCreateUseCaseP
 
 @Injectable()
 export class UserCreateUseCase extends UseCase {
-    constructor(private readonly createUserRepository: UserCreateRepositoryAbstract) { super() }
+    constructor(private readonly createUserRepository: UserCreateRepositoryAbstract) {
+        super()
+    }
 
     async perform(createArgs: UserCreateUseCaseArgs): UserCreateUseCasePerformResponse {
         try {

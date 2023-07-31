@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
+import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
 import { UserDeleteRepositoryAbstract } from '@modules/user/repository/delete.repository'
-import ResultException from '@util/exceptions/result.exception'
 
-export class UserDeleteUseCaseDTO { }
+export class UserDeleteUseCaseDTO {}
 
 export const UserDeleteUseCaseArgsSchema = ZodValidateService.defaultSchemaModelTable()
 
@@ -15,8 +15,10 @@ export type UserDeleteUseCasePerformResponseValue = boolean
 export type UserDeleteUseCasePerformResponse = Promise<Result<UserDeleteUseCasePerformResponseValue>>
 
 @Injectable()
-export class UserDeleteUseCase {
-    constructor(private readonly deleteUserRepository: UserDeleteRepositoryAbstract) { }
+export class UserDeleteUseCase extends UseCase {
+    constructor(private readonly deleteUserRepository: UserDeleteRepositoryAbstract) {
+        super()
+    }
 
     async perform(deleteArgs: UserDeleteUseCaseArgs): UserDeleteUseCasePerformResponse {
         try {
@@ -24,10 +26,7 @@ export class UserDeleteUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Delete User', message: [{ message: 'Cannot delete user' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Delete User', message: 'Cannot delete user' })
         }
     }
 
