@@ -9,19 +9,20 @@ import { AuthenticationJWT } from '@@types/auth'
 import { UserPropSelect } from '@modules/user/repository/repository'
 import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserUpdateRepositoryAbstract } from '@modules/user/repository/update.repository'
-import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
+import { ENUM_AUTH_MESSAGES } from '@modules/auth/auth.messages'
+import { ENUM_USER_MESSAGES } from '@modules/user/user.messeges'
 import { ResultException } from '@util/exceptions/result.exception'
 
 export class AuthSignInUseCaseDTO {
     @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.LOGIN_IS_EMPTY })
     login: string
-    @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.PASSWORD_IS_EMPTY })
+    @IsNotEmpty({ message: ENUM_USER_MESSAGES.PASSWORD_IS_EMPTY })
     password: string
 }
 
 export const AuthSignInUseCaseArgsSchema = z.object({
-    login: z.string().trim().nonempty({ message: ENUM_AUTH_MESSAGES.USERNAME_IS_EMPTY }),
-    password: z.string().trim().nonempty({ message: ENUM_AUTH_MESSAGES.PASSWORD_IS_EMPTY })
+    login: z.string().trim().nonempty({ message: ENUM_USER_MESSAGES.USERNAME_IS_EMPTY }),
+    password: z.string().trim().nonempty({ message: ENUM_USER_MESSAGES.PASSWORD_IS_EMPTY })
 })
 
 const UserPropsSelected = {

@@ -5,19 +5,19 @@ import { ZodValidateService } from '@services/zod'
 import { UserEntitySimple } from '@modules/user/schema'
 import { IsNotEmpty } from 'class-validator'
 import { UserCreateRepositoryAbstract } from '@modules/user/repository/create.repository'
-import { ENUM_AUTH_MESSAGES } from '@util/messages/auth.messages'
-import { USER_REGEX } from '@util/regex'
+import { ENUM_USER_MESSAGES } from '@modules/user/user.messeges'
+import { USER_REGEX } from '@modules/user/user.regex'
 import { HttpStatusCodes } from '@util/http/status-code'
 import { UseCase } from '@common/use-case'
 
 export class AuthSignUpUseCaseDTO {
-    @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.USERNAME_IS_EMPTY })
+    @IsNotEmpty({ message: ENUM_USER_MESSAGES.USERNAME_IS_EMPTY })
     username: string
-    @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.NAME_IS_EMPTY })
+    @IsNotEmpty({ message: ENUM_USER_MESSAGES.NAME_IS_EMPTY })
     name: string
-    @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.EMAIL_IS_EMPTY })
+    @IsNotEmpty({ message: ENUM_USER_MESSAGES.EMAIL_IS_EMPTY })
     email: string
-    @IsNotEmpty({ message: ENUM_AUTH_MESSAGES.PASSWORD_IS_EMPTY })
+    @IsNotEmpty({ message: ENUM_USER_MESSAGES.PASSWORD_IS_EMPTY })
     password: string
 }
 
@@ -25,19 +25,15 @@ export const AuthSignUpUseCaseArgsSchema = z.object({
     username: z
         .string()
         .trim()
-        .nonempty({ message: ENUM_AUTH_MESSAGES.USERNAME_IS_EMPTY })
-        .regex(USER_REGEX.USERNAME_REGEX, { message: ENUM_AUTH_MESSAGES.FORMAT_USERNAME_INVALID }),
-    name: z
-        .string()
-        .trim()
-        .nonempty({ message: ENUM_AUTH_MESSAGES.NAME_IS_EMPTY })
-        .regex(USER_REGEX.NAME_REGEX, { message: ENUM_AUTH_MESSAGES.FORMAT_NAME_INVALID }),
-    email: z.string().email({ message: ENUM_AUTH_MESSAGES.FORMAT_EMAIL_INVALID }).trim().nonempty({ message: ENUM_AUTH_MESSAGES.EMAIL_IS_EMPTY }),
+        .nonempty({ message: ENUM_USER_MESSAGES.USERNAME_IS_EMPTY })
+        .regex(USER_REGEX.USERNAME, { message: ENUM_USER_MESSAGES.FORMAT_USERNAME_INVALID }),
+    name: z.string().trim().nonempty({ message: ENUM_USER_MESSAGES.NAME_IS_EMPTY }).regex(USER_REGEX.NAME, { message: ENUM_USER_MESSAGES.FORMAT_NAME_INVALID }),
+    email: z.string().email({ message: ENUM_USER_MESSAGES.FORMAT_EMAIL_INVALID }).trim().nonempty({ message: ENUM_USER_MESSAGES.EMAIL_IS_EMPTY }),
     password: z
         .string()
         .trim()
-        .nonempty({ message: ENUM_AUTH_MESSAGES.PASSWORD_IS_EMPTY })
-        .regex(USER_REGEX.PASSWORD_REGEX, { message: ENUM_AUTH_MESSAGES.FORMAT_PASSWORD_INVALID })
+        .nonempty({ message: ENUM_USER_MESSAGES.PASSWORD_IS_EMPTY })
+        .regex(USER_REGEX.PASSWORD, { message: ENUM_USER_MESSAGES.FORMAT_PASSWORD_INVALID })
 })
 
 export type AuthSignUpUseCaseArgs = z.input<typeof AuthSignUpUseCaseArgsSchema>
