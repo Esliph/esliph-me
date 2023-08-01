@@ -1,14 +1,14 @@
 import { Controller, Get, Post, Delete, Put, UseGuards } from '@nestjs/common'
 import { Body, Res, Param } from '@nestjs/common/decorators'
 import { Response } from '@@types/http'
+import { Application } from '@core'
+import { ErrorType } from '@@types/error'
+import { Privilege } from '@util/decorators/privilege.decorator'
 import { UserService } from '@modules/user/user.service'
+import { UserPrivileges } from '@modules/user/user.privileges'
 import { UserUpdateUseCaseDTO } from '@modules/user/use-case/update.use-case'
 import { UserDeleteUseCaseDTO } from '@modules/user/use-case/delete.use-case'
 import { UserCreateUseCaseDTO } from '@modules/user/use-case/create.use-case'
-import { Privilege } from '@util/decorators/privilege.decorator'
-import { UserPrivileges } from '@modules/user/user.privileges'
-import { ErrorType } from '@@types/error'
-import { Application } from '@core'
 
 @Privilege(UserPrivileges.Parent)
 @Controller('/users')

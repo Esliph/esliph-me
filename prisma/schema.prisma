@@ -73,3 +73,27 @@ model Privilege {
 
     @@map("privilege")
 }
+
+enum NotificationType {
+    Email
+}
+
+enum NotificationStatus {
+    Opened
+    Sent
+    Error
+}
+
+model Notification {
+    id       Int      @id @default(autoincrement())
+    title    String
+    body     String
+    status   NotificationStatus
+    sender   String
+    recipients   String[]
+    sendDate DateTime @default(now()) @map("send_date")
+    createAt DateTime @default(now()) @map("create_at")
+    updateAt DateTime @updatedAt @map("update_at")
+
+    @@map("notification")
+}
