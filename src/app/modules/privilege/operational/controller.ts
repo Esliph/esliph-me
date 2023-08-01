@@ -1,7 +1,7 @@
 import { ExecutionContext } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { MetadataControl } from '@services/metadata'
-import { PrivilegeModel } from '@@types/privileges'
+import { PrivilegeModel } from '@modules/privilege/schema'
 
 export const PRIVILEGE_KEY_NAME = 'privileges'
 

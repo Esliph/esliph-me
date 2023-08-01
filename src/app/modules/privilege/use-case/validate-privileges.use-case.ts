@@ -5,7 +5,7 @@ import { ZodValidateService } from '@services/zod'
 import { HttpStatusCodes } from '@util/http/status-code'
 import { UseCase } from '@common/use-case'
 import { PrivilegeAccess, PrivilegeOperational } from '@modules/privilege/operational/controller'
-import { PrivilegeModel } from '@@types/privileges'
+import { PrivilegeModel } from '@modules/privilege/schema'
 import { ForbiddenException } from '@util/exceptions/forbidden.exception'
 
 export const PrivilegeValidateUseCaseArgsSchema = ZodValidateService.defaultSchemaModelTable().extend({

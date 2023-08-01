@@ -8,7 +8,7 @@ export class HttpException extends HttpExceptionModel {
             {
                 message: errorInfo.message,
                 title: errorInfo.title || 'Request Exception',
-                causes: errorInfo.causes,
+                causes: errorInfo.causes || [],
                 description: errorInfo.description
             },
             status
