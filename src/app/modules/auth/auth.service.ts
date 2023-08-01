@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { AuthSignInUseCase, AuthSignInUseCaseArgs, AuthSignInUseCasePerformResponseValue } from '@modules/auth/use-case/sign-in.use-case'
-import { AuthSignUpUseCase, AuthSignUpUseCaseArgs, AuthSignUpUseCasePerformResponseValue } from '@modules/auth/use-case/sign-up.use-case'
+import { JwtService } from '@nestjs/jwt'
 import { Service } from '@common/service'
+import { AuthenticationJWT } from '@@types/auth'
+import { AuthSignInUseCase, AuthSignInUseCaseArgs } from '@modules/auth/use-case/sign-in.use-case'
+import { AuthSignUpUseCase, AuthSignUpUseCaseArgs } from '@modules/auth/use-case/sign-up.use-case'
 
 @Injectable()
 export class AuthService extends Service {
-    constructor(private readonly signUpUC: AuthSignUpUseCase, private readonly signInUC: AuthSignInUseCase) {
+    constructor(private readonly jwtService: JwtService, private readonly signUpUC: AuthSignUpUseCase, private readonly signInUC: AuthSignInUseCase) {
         super()
     }
 
@@ -19,5 +21,17 @@ export class AuthService extends Service {
         const response = await this.signInUC.perform({ ...body })
 
         return response
+    }
+
+    public extracrToken(bearerToken = '') {
+        const [, token] = bearerToken.split(' ')
+
+        return token || ''
+    }
+
+    public async extractPayload(token: string) {
+        const payload = this.jwtService.decode(this.extracrToken(token)) as AuthenticationJWT | null
+
+        return payload || null
     }
 }
