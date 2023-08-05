@@ -7,7 +7,7 @@ import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
 import { AuthenticationJWT } from '@@types/auth'
 import { UserPropSelect } from '@modules/user/repository/repository'
-import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
+import { UserFindFirstRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserUpdateRepositoryAbstract } from '@modules/user/repository/update.repository'
 import { ENUM_AUTH_MESSAGES } from '@modules/auth/auth.messages'
 import { ENUM_USER_MESSAGES } from '@modules/user/user.messeges'
@@ -46,7 +46,7 @@ export type AuthSignInUseCasePerformResponse = Promise<Result<AuthSignInUseCaseP
 @Injectable()
 export class AuthSignInUseCase extends UseCase {
     constructor(
-        private readonly findUserUniqueRepository: UserFindUniqueRepositoryAbstract,
+        private readonly findUserFirstRepository: UserFindFirstRepositoryAbstract,
         private readonly userUpdateRepository: UserUpdateRepositoryAbstract,
         private readonly jwtService: JwtService
     ) {
@@ -92,40 +92,27 @@ export class AuthSignInUseCase extends UseCase {
     }
 
     private async getUserByLogin(login: string) {
-        const responseFindUserByEmail = await this.findUserByEmail(login)
+        const responseUserByLogin = await this.performFindUserRepository(login)
 
-        if (responseFindUserByEmail.isSuccess()) {
-            return responseFindUserByEmail
+        if (!responseUserByLogin.isSuccess()) {
+            throw new ResultException({
+                title: 'Sign In user',
+                causes: [{ message: '"Login" or "Password" incorrect', origin: 'login;password' }],
+                message: 'Incorrect credentials'
+            })
         }
 
-        const responseFindUserByUsername = await this.findUserByUsername(login)
-
-        if (responseFindUserByUsername.isSuccess()) {
-            return responseFindUserByUsername
-        }
-
-        throw new ResultException({
-            title: 'Sign In user',
-            causes: [{ message: '"Login" or "Password" incorrect', origin: 'login;password' }],
-            message: 'Incorrect credentials'
-        })
+        return responseUserByLogin
     }
 
-    private async findUserByEmail(email: string) {
-        const responseUserByEmail = await this.performFindUserRepository({ email })
-
-        return responseUserByEmail
-    }
-
-    private async findUserByUsername(username: string) {
-        const responseUserByEmail = await this.performFindUserRepository({ username })
-
-        return responseUserByEmail
-    }
-
-    private async performFindUserRepository(args: { username: string } | { email: string }) {
-        const responseUserByEmail: Result<UserPropsSelectedType> = await this.findUserUniqueRepository.perform({
-            where: { ...args },
+    private async performFindUserRepository(login: string) {
+        const responseUserByEmail: Result<UserPropsSelectedType> = await this.findUserFirstRepository.perform({
+            where: {
+                OR: [
+                    { email: login },
+                    { username: login }
+                ]
+            },
             select: UserPropsSelected
         })
 

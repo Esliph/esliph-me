@@ -56,7 +56,7 @@ export class Application {
         await this.registerInApp(fastifyCompression, { encodings: ['gzip', 'deflate'] })
         await this.registerInApp(fastifyCookie, { secret: 'my-secret' })
         await this.registerInApp(fastifyCsrf)
-        // await this.registerInApp(fastifyHelmet)
+        await this.registerInApp(fastifyHelmet)
         await this.performListen()
     }
 
