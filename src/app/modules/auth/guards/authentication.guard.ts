@@ -22,7 +22,7 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
             const user = await this.authService.extractPayload(request.headers?.authorization)
 
             await this.canActivePrivilege(context, user)
-            // await this.canActiveSuper(context)
+            await this.canActiveSuper(context)
 
             return true
         } catch (err) {

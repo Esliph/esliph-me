@@ -43,7 +43,7 @@ export class ErrorCreateUseCase extends UseCase {
         return Result.success({ success: 'Error create successfully' }, HttpStatusCodes.CREATED)
     }
 
-    private async performCreateErrorRepository(errorData: ErrorEntitySimple) {
+    private async performCreateErrorRepository(errorData: ErrorCreateUseCaseArgs) {
         const response = await this.createErrorRepository.perform({
             data: {
                 message: errorData.message,
@@ -51,6 +51,12 @@ export class ErrorCreateUseCase extends UseCase {
                 title: errorData.title,
                 type: errorData.type,
                 stack: errorData.stack,
+                causes: {
+                    create: (errorData.causes || []).map(cause => ({
+                        message: cause.message,
+                        origin: cause.origin
+                    }))
+                }
             }
         })
 

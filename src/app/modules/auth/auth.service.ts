@@ -23,14 +23,14 @@ export class AuthService extends Service {
         return response
     }
 
-    public extracrToken(bearerToken = '') {
+    extractToken(bearerToken = '') {
         const [, token] = bearerToken.split(' ')
 
         return token || ''
     }
 
-    public async extractPayload(token: string) {
-        const payload = this.jwtService.decode(this.extracrToken(token)) as AuthenticationJWT | null
+    async extractPayload(token: string) {
+        const payload = this.jwtService.decode(this.extractToken(token)) as AuthenticationJWT | null
 
         return payload || null
     }

@@ -71,7 +71,9 @@ export class PrivilegeValidateUseCase extends UseCase {
     }
 
     private validPrivilegesUser(id: number, privileges: PrivilegeModel[]) {
-        throw new UnauthorizedException()
+        if (privileges.length && !id) {
+            throw new UnauthorizedException()
+        }
     }
 
     private validPrivilegesRoot(id: number, privileges: PrivilegeModel[]) { }

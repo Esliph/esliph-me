@@ -107,28 +107,28 @@ export class PrismaService extends DatabaseService implements OnModuleInit, Data
 
     private initComponent() {
         // @ts-expect-error
-        this.$on('error', (ev: any) => {
+        this.$on('error', (err: any) => {
             const erroEvent = {
                 title: 'PrismaService',
-                message: ev.message,
-                stack: ev.stack,
-                causes: [{ message: ev.message, origin: `${ev.errorCode}${ev.meta?.target ? `: [${ev.meta.target.join(';')}]` : ''}` }],
+                message: err.message,
+                stack: err.stack,
+                causes: [{ message: err.message, origin: `${err.errorCode}${err.meta?.target ? `: [${err.meta.target.join(';')}]` : ''}` }],
                 type: ErrorType.Database
             }
 
             Application.emit('error', erroEvent)
         })
         // @ts-expect-error
-        this.$on('info', (ev: any) => {
-            // Application.console.log(ev, null, { context: '[DatabaseEvent]' })
+        this.$on('info', (err: any) => {
+            // Application.log(err, 'DatabaseEvent')
         })
         // @ts-expect-error
-        this.$on('query', ev => {
-            // Application.console.log(ev.message, null, { context: '[DatabaseEvent]' })
+        this.$on('query', err => {
+            // Application.log(err, 'DatabaseEvent')
         })
         // @ts-expect-error
-        this.$on('warn', (ev: any) => {
-            // Application.console.warn(ev.message, null, { context: '[DatabaseEvent]' })
+        this.$on('warn', (err: any) => {
+            // Application.warn(err, 'DatabaseEvent')
         })
     }
 }

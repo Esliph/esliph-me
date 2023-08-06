@@ -16,7 +16,10 @@ const ErrorPropsSelected = {
     message: true,
     description: true,
     stack: true,
-    type: true
+    type: true,
+    causes: true,
+    createAt: true,
+    updateAt: true,
 }
 
 export type ErrorListUseCaseArgs = z.input<typeof ErrorListUseCaseArgsSchema>
@@ -62,9 +65,8 @@ export class ErrorListUseCase extends UseCase {
 
     private async performListRepository(listArgs: ErrorListUseCaseArgs) {
         const response = await this.listErrorRepository.perform({
-            where: listArgs, select: ErrorPropsSelected, include: {
-                causes: true
-            }
+            where: listArgs,
+            select: ErrorPropsSelected
         })
 
         return response
