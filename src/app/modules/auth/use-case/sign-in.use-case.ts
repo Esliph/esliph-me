@@ -10,7 +10,7 @@ import { UserPropSelect } from '@modules/user/repository/repository'
 import { UserFindFirstRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserUpdateRepositoryAbstract } from '@modules/user/repository/update.repository'
 import { ENUM_AUTH_MESSAGES } from '@modules/auth/auth.messages'
-import { ENUM_USER_MESSAGES } from '@modules/user/user.messeges'
+import { ENUM_USER_MESSAGES } from '@modules/user/user.messages'
 import { ResultException } from '@util/exceptions/result.exception'
 
 export class AuthSignInUseCaseDTO {

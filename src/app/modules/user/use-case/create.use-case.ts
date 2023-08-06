@@ -7,7 +7,7 @@ import { ZodValidateService } from '@services/zod'
 import { UserEntitySimple } from '@modules/user/schema'
 import { UserCreateRepositoryAbstract } from '@modules/user/repository/create.repository'
 import { HttpStatusCodes } from '@util/http/status-code'
-import { ENUM_USER_MESSAGES } from '@modules/user/user.messeges'
+import { ENUM_USER_MESSAGES } from '@modules/user/user.messages'
 import { USER_REGEX } from '@modules/user/user.regex'
 
 export class UserCreateUseCaseDTO {

@@ -121,7 +121,7 @@ model Mail {
     status   MailStatus @default(Opened)
     sender   String
     recipients   String[]
-    sendDate DateTime @default(now()) @map("send_date")
+    sentAt   DateTime?  @map("sent_at")
     createAt DateTime @default(now()) @map("create_at")
     updateAt DateTime @updatedAt @map("update_at")
 
