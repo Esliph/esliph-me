@@ -3,10 +3,7 @@ import { Service } from '@common/service'
 
 @Injectable()
 export class ErrorCauseService extends Service {
-    constructor(
-    ) {
+    constructor() {
         super()
     }
-
-    
 }

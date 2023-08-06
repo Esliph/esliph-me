@@ -14,7 +14,10 @@ export const MailCreateUseCaseArgsSchema = z.object({
     title: z.string().nonempty({ message: ENUM_MAIL_MESSAGES.TITLE_IS_EMPTY }),
     body: z.string().optional().transform(val => `${val}`),
     sender: z.string().email({ message: ENUM_USER_MESSAGES.FORMAT_EMAIL_INVALID }).nonempty({ message: ENUM_MAIL_MESSAGES.SENDER_IS_EMPTY }),
-    recipients: z.array(z.string().email({ message: ENUM_USER_MESSAGES.FORMAT_EMAIL_INVALID })).nonempty({ message: ENUM_MAIL_MESSAGES.RECIPIENTS_IS_EMPTY }),
+    recipients: z.union([
+        z.string().email({ message: ENUM_USER_MESSAGES.FORMAT_EMAIL_INVALID }),
+        z.array(z.string().email({ message: ENUM_USER_MESSAGES.FORMAT_EMAIL_INVALID }))
+    ]).transform(val => Array.isArray(val) ? val : [val]).refine(val => val.length > 0, { message: ENUM_MAIL_MESSAGES.RECIPIENTS_IS_EMPTY })
 })
 
 export type MailCreateUseCaseArgs = z.input<typeof MailCreateUseCaseArgsSchema>

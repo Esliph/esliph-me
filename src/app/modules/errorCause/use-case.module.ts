@@ -1,8 +1,6 @@
-import { ErrorCauseDependencies } from '@modules/errorCause/errorCause.dependencies'
 import { Global, Module, Provider } from '@nestjs/common'
 
-const errorCauseServicesUseCase: Provider[] = [
-]
+const errorCauseServicesUseCase: Provider[] = []
 
 @Global()
 @Module({

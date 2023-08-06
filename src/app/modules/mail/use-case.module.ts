@@ -5,9 +5,11 @@ import { MailListUseCase } from '@modules/mail/use-case/list.use-case'
 import { MailUpdateUseCase } from '@modules/mail/use-case/update.use-case'
 import { MailFindOneUseCase } from '@modules/mail/use-case/find-one.use-case'
 import { MailCreateUseCase } from '@modules/mail/use-case/create.use-case'
+import { MailSendUseCase } from '@modules/mail/use-case/send.use-case'
 
 const mailServicesUseCase: Provider[] = [
     ...MailDependencies,
+    MailSendUseCase,
     MailCreateUseCase,
     MailListUseCase,
     MailUpdateUseCase,

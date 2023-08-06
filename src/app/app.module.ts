@@ -9,6 +9,7 @@ import { AuthModule } from '@modules/auth/auth.module'
 import { UserModule } from '@modules/user/user.modules'
 import { AuthenticationGuard } from '@modules/auth/guards/authentication.guard'
 import { PrivilegeModule } from '@modules/privilege/privilege.module'
+import { MailModule } from '@modules/mail/mail.module'
 
 const AppModuleServices: Provider[] = []
 
@@ -28,7 +29,7 @@ const AppModuleDependencies: Provider[] = [
 ]
 
 @Module({
-    imports: [ScheduleModule.forRoot(), UserModule, AuthModule, PrivilegeModule, ErrorModule],
+    imports: [ScheduleModule.forRoot(), UserModule, AuthModule, PrivilegeModule, ErrorModule, MailModule],
     controllers: [AppController],
     providers: [AppService, ...AppModuleDependencies, ...AppModuleServices],
     exports: [...AppModuleServices]

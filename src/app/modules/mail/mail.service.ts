@@ -5,6 +5,7 @@ import { MailFindOneUseCase, MailFindOneUseCaseArgs } from '@modules/mail/use-ca
 import { MailListUseCase, MailListUseCaseArgs } from '@modules/mail/use-case/list.use-case'
 import { MailUpdateUseCase, MailUpdateUseCaseArgs } from '@modules/mail/use-case/update.use-case'
 import { MailDeleteUseCase, MailDeleteUseCaseArgs } from '@modules/mail/use-case/delete.use-case'
+import { MailSendUseCase, MailSendUseCaseArgs } from '@modules/mail/use-case/send.use-case'
 
 @Injectable()
 export class MailService extends Service {
@@ -13,9 +14,16 @@ export class MailService extends Service {
         private readonly listUC: MailListUseCase,
         private readonly updateUC: MailUpdateUseCase,
         private readonly deleteUC: MailDeleteUseCase,
+        private readonly sendUC: MailSendUseCase,
         private readonly findUC: MailFindOneUseCase
     ) {
         super()
+    }
+
+    async sendMail(body: MailSendUseCaseArgs) {
+        const response = await this.sendUC.perform({ ...body })
+
+        return response
     }
 
     async getMails(body?: MailListUseCaseArgs) {
