@@ -18,6 +18,7 @@ export class ErrorOperation {
                 causes: causes,
                 description: description,
                 stack: stack,
+                dateTime: new Date(Date.now())
             })
         })
     }

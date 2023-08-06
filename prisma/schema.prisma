@@ -88,6 +88,7 @@ model Error {
     message String
     description String?
     stack String?
+    dateTime   DateTime @default(now())
     causes   ErrorCause[]
     createAt DateTime @default(now()) @map("create_at")
     updateAt DateTime @updatedAt @map("update_at")
@@ -107,27 +108,22 @@ model ErrorCause {
     @@map("error_cause")
 }
 
-enum NotificationType {
-    Email
-}
-
-enum NotificationStatus {
+enum MailStatus {
     Opened
     Sent
     Error
 }
 
-model Notification {
+model Mail {
     id       Int      @id @default(autoincrement())
     title    String
     body     String
-    status   NotificationStatus @default(Opened)
+    status   MailStatus @default(Opened)
     sender   String
     recipients   String[]
-    type    NotificationType @default(Email)
     sendDate DateTime @default(now()) @map("send_date")
     createAt DateTime @default(now()) @map("create_at")
     updateAt DateTime @updatedAt @map("update_at")
 
-    @@map("notification")
+    @@map("mail")
 }

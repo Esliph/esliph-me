@@ -11,6 +11,7 @@ export type ErrorModelSimple = {
     message: string;
     description?: string
     stack?: string
+    dateTime: Date
 }
 
 export class ErrorEntityTable implements ErrorModelTable {
@@ -20,6 +21,7 @@ export class ErrorEntityTable implements ErrorModelTable {
     message: string
     description: string | null
     stack: string | null
+    dateTime: Date
     createAt: Date
     updateAt: Date
     causes: ErrorCauseModelSimple[]
@@ -42,13 +44,14 @@ export class ErrorEntitySimple implements ErrorModelSimple {
     message: string
     description?: string
     stack?: string
+    dateTime: Date
 
-
-    constructor({ description, message, stack, title, type }: ErrorModelSimple) {
+    constructor({ description, message, stack, title, type, dateTime }: ErrorModelSimple) {
         this.description = description
         this.message = message
         this.stack = stack
         this.title = title
         this.type = type
+        this.dateTime = dateTime
     }
 }

@@ -51,6 +51,7 @@ export class ErrorCreateUseCase extends UseCase {
                 title: errorData.title,
                 type: errorData.type,
                 stack: errorData.stack,
+                dateTime: errorData.dateTime,
                 causes: {
                     create: (errorData.causes || []).map(cause => ({
                         message: cause.message,
