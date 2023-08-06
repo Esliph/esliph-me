@@ -4,7 +4,7 @@ import { APP_PIPE, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core'
 import { GlobalInterceptor } from '@util/interceptor'
 import { AppController } from '@app.controller'
 import { AppService } from '@app.service'
-import { GlobalMiddleware } from '@util/middleware'
+import { ErrorModule } from '@modules/error/error.module'
 import { AuthModule } from '@modules/auth/auth.module'
 import { UserModule } from '@modules/user/user.modules'
 import { AuthenticationGuard } from '@modules/auth/guards/authentication.guard'
@@ -28,13 +28,11 @@ const AppModuleDependencies: Provider[] = [
 ]
 
 @Module({
-    imports: [ScheduleModule.forRoot(), UserModule, AuthModule, PrivilegeModule],
+    imports: [ScheduleModule.forRoot(), UserModule, AuthModule, PrivilegeModule, ErrorModule],
     controllers: [AppController],
     providers: [AppService, ...AppModuleDependencies, ...AppModuleServices],
     exports: [...AppModuleServices]
 })
 export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        // consumer.apply(GlobalMiddleware).forRoutes('*')
-    }
+    configure(consumer: MiddlewareConsumer) { }
 }

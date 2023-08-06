@@ -74,12 +74,37 @@ model Privilege {
     @@map("privilege")
 }
 
+enum ErrorType {
+    Database
+    InternalServer
+    HttpRequest
+    ValidateData
+}
+
 model Error {
     id       Int      @id @default(autoincrement())
+    type     ErrorType
+    title String
+    message String
+    description String?
+    stack String?
+    causes   ErrorCause[]
     createAt DateTime @default(now()) @map("create_at")
     updateAt DateTime @updatedAt @map("update_at")
 
     @@map("error")
+}
+
+model ErrorCause {
+    id       Int      @id @default(autoincrement())
+    message  String
+    origin   String?
+    error    Error  @relation(fields: [errorId], references: [id])
+    errorId  Int
+    createAt DateTime @default(now()) @map("create_at")
+    updateAt DateTime @updatedAt @map("update_at")
+
+    @@map("error_cause")
 }
 
 enum NotificationType {
@@ -96,9 +121,10 @@ model Notification {
     id       Int      @id @default(autoincrement())
     title    String
     body     String
-    status   NotificationStatus
+    status   NotificationStatus @default(Opened)
     sender   String
     recipients   String[]
+    type    NotificationType @default(Email)
     sendDate DateTime @default(now()) @map("send_date")
     createAt DateTime @default(now()) @map("create_at")
     updateAt DateTime @updatedAt @map("update_at")

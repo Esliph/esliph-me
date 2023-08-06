@@ -6,7 +6,7 @@ import { PrivilegeModelTable } from '@modules/privilege/schema'
 
 type PrivilegeGetPayloadTypes = boolean | null | undefined | { select?: Prisma.PrivilegeSelect | null }
 type PrivilegeGetPayload<T extends boolean | null | undefined | { select?: Prisma.PrivilegeSelect | null }> = Prisma.PrivilegeGetPayload<T>
-export type PrivilegeArgs = Prisma.PrivilegeArgs
+export type PrivilegeArgs = Prisma.PrivilegeDefaultArgs
 export type PrivilegeCreateArgs = Prisma.PrivilegeCreateArgs
 export type PrivilegePropSelect<ArgsSelect extends PrivilegeGetPayloadTypes> = PrivilegeGetPayload<ArgsSelect>
 export type PrivilegeCreateResponse = { privilege: PrivilegeModelTable }

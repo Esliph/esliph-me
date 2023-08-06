@@ -1,22 +1,54 @@
-import { Error as ErrorModelPrisma } from '@prisma/client'
-import { HashEsliph } from '@esliph/util-node'
+import { Error as ErrorModelPrisma, ErrorType } from '@prisma/client'
+import { ErrorCauseModelSimple } from '@modules/errorCause/schema'
 
 export type ErrorModelTable = ErrorModelPrisma
 
+export { ErrorType }
+
 export type ErrorModelSimple = {
-    /* Define props of "Error" */
+    type: ErrorType;
+    title: string;
+    message: string;
+    description?: string
+    stack?: string
 }
 
 export class ErrorEntityTable implements ErrorModelTable {
+    id: number
+    type: ErrorType
+    title: string
+    message: string
+    description: string | null
+    stack: string | null
+    createAt: Date
+    updateAt: Date
+    causes: ErrorCauseModelSimple[]
 
-    constructor({}: ErrorModelTable) {
-        throw new Error('Method not implemented')
+    constructor({ createAt, description, id, message, stack, title, type, updateAt }: ErrorModelTable) {
+        this.createAt = createAt
+        this.id = id
+        this.message = message
+        this.description = description
+        this.stack = stack
+        this.title = title
+        this.type = type
+        this.updateAt = updateAt
     }
 }
 
 export class ErrorEntitySimple implements ErrorModelSimple {
+    type: ErrorType
+    title: string
+    message: string
+    description?: string
+    stack?: string
 
-    constructor({}: ErrorModelSimple) {
-        throw new Error('Method not implemented')
+
+    constructor({ description, message, stack, title, type }: ErrorModelSimple) {
+        this.description = description
+        this.message = message
+        this.stack = stack
+        this.title = title
+        this.type = type
     }
 }

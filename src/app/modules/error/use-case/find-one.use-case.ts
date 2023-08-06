@@ -1,20 +1,16 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
+import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
-import { ResultException } from '@util/exceptions/result.exception'
 import { ErrorPropSelect } from '@modules/error/repository/repository'
 import { ErrorFindUniqueRepositoryAbstract } from '@modules/error/repository/find.repository'
 
-export class ErrorFindOneUseCaseDTO {
-    /* Set the DTO properties to list "Error" */
-}
+export class ErrorFindOneUseCaseDTO {}
 
 export const ErrorFindOneUseCaseArgsSchema = ZodValidateService.defaultSchemaModelTable()
 
-const ErrorPropsSelected = {
-    /* Defines the properties that must be retrieved when searching for "Error" */
-}
+const ErrorPropsSelected = {}
 
 export type ErrorFindOneUseCaseArgs = z.input<typeof ErrorFindOneUseCaseArgsSchema>
 export type ErrorFindOneUseCaseResponse = z.output<typeof ErrorFindOneUseCaseArgsSchema>
@@ -22,8 +18,10 @@ export type ErrorFindOneUseCasePerformResponseValue = { error: ErrorPropSelect<{
 export type ErrorFindOneUseCasePerformResponse = Promise<Result<ErrorFindOneUseCasePerformResponseValue>>
 
 @Injectable()
-export class ErrorFindOneUseCase {
-    constructor(private readonly findErrorRepository: ErrorFindUniqueRepositoryAbstract) { }
+export class ErrorFindOneUseCase extends UseCase {
+    constructor(private readonly findErrorRepository: ErrorFindUniqueRepositoryAbstract) {
+        super()
+    }
 
     async perform(findArgs: ErrorFindOneUseCaseArgs): ErrorFindOneUseCasePerformResponse {
         try {
@@ -31,10 +29,7 @@ export class ErrorFindOneUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Find Error', message: [{ message: 'Cannot find error' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'Find Error', message: 'Cannot find error' })
         }
     }
 

@@ -1,22 +1,32 @@
+import { ErrorType } from '@modules/error/schema'
+import { Application } from '@core'
 import { HttpStatusCodes } from '@util/http/status-code'
 import { Result } from '@esliph/util-node'
 import { Exception } from '@util/exceptions/exception'
-import { ErrorResultInfo } from '@esliph/util-node/dist/lib/error'
+import { ErrorEsliph } from '@esliph/util-node'
 
 export class UseCase {
     extractError<T>(err: any, methodErrorInfo: { title: string; message: string }) {
-        let errorInfo: ErrorResultInfo
+        let errorInfo: ErrorEsliph.ErrorResultInfo
 
         if (err instanceof Exception) {
             errorInfo = this.extractErrorIfException(err)
         } else {
             errorInfo = this.extractErrorIfUnknown(err, methodErrorInfo)
+
+            Application.emit('error', {
+                title: errorInfo.title,
+                message: errorInfo.message,
+                causes: errorInfo.causes,
+                description: errorInfo.description,
+                type: ErrorType.InternalServer
+            })
         }
 
         return Result.failure<T>(errorInfo, HttpStatusCodes.BAD_REQUEST)
     }
 
-    private extractErrorIfException(err: Exception): ErrorResultInfo {
+    private extractErrorIfException(err: Exception): ErrorEsliph.ErrorResultInfo {
         return {
             message: err.getError().message,
             title: err.getError().title,
@@ -25,7 +35,7 @@ export class UseCase {
         }
     }
 
-    private extractErrorIfUnknown(err: any, { message, title }: { title: string; message: string }): ErrorResultInfo {
+    private extractErrorIfUnknown(err: any, { message, title }: { title: string; message: string }): ErrorEsliph.ErrorResultInfo {
         return { title, message }
     }
 }

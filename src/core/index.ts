@@ -47,9 +47,7 @@ export class Application {
     }
 
     private static initObserver() {
-        this.on('error', err => {
-            console.log('!', err)
-        })
+        this.on('error', err => { })
     }
 
     private static async initComponentsFactory() {

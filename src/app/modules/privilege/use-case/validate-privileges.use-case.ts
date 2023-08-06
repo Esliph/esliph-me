@@ -1,3 +1,4 @@
+import { UnauthorizedException } from '@util/exceptions/unauthorized.exception'
 import { Injectable } from '@nestjs/common'
 import { Result } from '@esliph/util-node'
 import { z } from 'zod'
@@ -69,9 +70,11 @@ export class PrivilegeValidateUseCase extends UseCase {
         }
     }
 
-    private validPrivilegesUser(id: number, privileges: PrivilegeModel[]) {}
+    private validPrivilegesUser(id: number, privileges: PrivilegeModel[]) {
+        throw new UnauthorizedException()
+    }
 
-    private validPrivilegesRoot(id: number, privileges: PrivilegeModel[]) {}
+    private validPrivilegesRoot(id: number, privileges: PrivilegeModel[]) { }
 }
 
 const VALID_GLOBAL_PRIVILEGES = {

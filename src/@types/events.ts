@@ -1,4 +1,4 @@
-import { ErrorType } from './error'
+import { ErrorType } from '@modules/error/schema'
 
 export type AppEvents = {
     error: {

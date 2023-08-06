@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { Result } from '@esliph/util-node'
 import { ResultException } from '@util/exceptions/result.exception'
 import { Application } from '@core'
-import { ErrorType } from '@@types/error'
+import { ErrorType } from '@modules/error/schema'
 
 @Injectable()
 export class ZodValidateService {

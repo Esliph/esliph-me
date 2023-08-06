@@ -1,22 +1,9 @@
 import { Provider } from '@nestjs/common'
-import { ErrorModelTableRepositoryAbstract, ErrorModelTableRepository } from '@modules/error/repository/repository'
 import { ErrorCreateManyRepositoryAbstract, ErrorCreateManyRepository, ErrorCreateRepositoryAbstract, ErrorCreateRepository } from '@modules/error/repository/create.repository'
-import { ErrorUpdateManyRepositoryAbstract, ErrorUpdateManyRepository, ErrorUpdateRepositoryAbstract, ErrorUpdateRepository } from '@modules/error/repository/update.repository'
 import { ErrorDeleteManyRepositoryAbstract, ErrorDeleteManyRepository, ErrorDeleteRepositoryAbstract, ErrorDeleteRepository } from '@modules/error/repository/delete.repository'
-import {
-    ErrorFindExistsRepositoryAbstract,
-    ErrorFindExistsRepository,
-    ErrorFindFirstOrThrowRepositoryAbstract,
-    ErrorFindFirstOrThrowRepository,
-    ErrorFindFirstRepositoryAbstract,
-    ErrorFindFirstRepository,
-    ErrorFindManyRepositoryAbstract,
-    ErrorFindManyRepository,
-    ErrorFindUniqueOrThrowRepositoryAbstract,
-    ErrorFindUniqueOrThrowRepository,
-    ErrorFindUniqueRepositoryAbstract,
-    ErrorFindUniqueRepository
-} from '@modules/error/repository/find.repository'
+import { ErrorFindExistsRepositoryAbstract, ErrorFindExistsRepository, ErrorFindFirstOrThrowRepositoryAbstract, ErrorFindFirstOrThrowRepository, ErrorFindFirstRepositoryAbstract, ErrorFindFirstRepository, ErrorFindManyRepositoryAbstract, ErrorFindManyRepository, ErrorFindUniqueOrThrowRepositoryAbstract, ErrorFindUniqueOrThrowRepository, ErrorFindUniqueRepositoryAbstract, ErrorFindUniqueRepository } from '@modules/error/repository/find.repository'
+import { ErrorModelTableRepositoryAbstract, ErrorModelTableRepository } from '@modules/error/repository/repository'
+import { ErrorUpdateManyRepositoryAbstract, ErrorUpdateManyRepository, ErrorUpdateRepositoryAbstract, ErrorUpdateRepository } from '@modules/error/repository/update.repository'
 
 export const ErrorDependencies: Provider[] = [
     {

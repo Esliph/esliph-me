@@ -58,6 +58,7 @@ module.exports = {
         "@typescript-eslint/no-empty-interface": "warn",
         "no-empty": "warn",
         "camelcase": "warn",
+        "no-useless-catch": "off",
         "no-unused-expressions": [
             "warn",
             {

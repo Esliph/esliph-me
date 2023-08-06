@@ -1,12 +1,12 @@
 import { HttpStatusCodes } from '@util/http/status-code'
-import { ErrorType } from '@@types/error'
+import { ErrorType } from '@modules/error/schema'
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { Result, getEnv } from '@esliph/util-node'
 import { Application } from '@core'
 import { ErrorResultInfo } from '@esliph/util-node/dist/lib/error'
 
-export abstract class DatabaseService extends PrismaClient {}
+export abstract class DatabaseService extends PrismaClient { }
 
 export class DatabaseModel {
     extractError<T>(err: any, methodErrorInfo: { title: string; message: string }) {
@@ -88,11 +88,13 @@ export class PrismaService extends DatabaseService implements OnModuleInit, Data
                 type: ErrorType.Database
             }
 
-            // Application.emit('error', errorEvent)
+            Application.emit('error', errorEvent)
 
             if (getEnv({ name: 'NODE_ENV' }) == 'production') {
                 await this.$disconnect()
             }
+
+            Application.error('Database connection failed', 'Database')
         }
     }
 

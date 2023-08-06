@@ -1,10 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule, Provider } from '@nestjs/common'
+import { ErrorOperation } from '@modules/error/operational/controller'
+import { Global, MiddlewareConsumer, Module, NestModule, Provider } from '@nestjs/common'
 import { ErrorController } from '@modules/error/error.controller'
 import { ErrorUseCaseModule } from '@modules/error/use-case.module'
 import { ErrorService } from '@modules/error/error.service'
 
-const ErrorModuleServices: Provider[] = [ErrorService]
+const ErrorModuleServices: Provider[] = [ErrorOperation, ErrorService]
 
+@Global()
 @Module({
     imports: [
         ErrorUseCaseModule

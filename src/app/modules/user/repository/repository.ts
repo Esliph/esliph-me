@@ -6,7 +6,7 @@ import { UserModelTable } from '@modules/user/schema'
 
 type UserGetPayloadTypes = boolean | null | undefined | { select?: Prisma.UserSelect | null }
 type UserGetPayload<T extends boolean | null | undefined | { select?: Prisma.UserSelect | null }> = Prisma.UserGetPayload<T>
-export type UserArgs = Prisma.UserArgs
+export type UserArgs = Prisma.UserDefaultArgs
 export type UserCreateArgs = Prisma.UserCreateArgs
 export type UserPropSelect<ArgsSelect extends UserGetPayloadTypes> = UserGetPayload<ArgsSelect>
 export type UserCreateResponse = { user: UserModelTable }

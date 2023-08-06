@@ -1,12 +1,12 @@
 import { Prisma } from '@prisma/client'
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
-import { DatabaseService } from '@services/database'
+import { Result } from '@esliph/util-node'
+import { DatabaseModel, DatabaseService } from '@services/database'
 import { ErrorModelTable } from '@modules/error/schema'
 
 type ErrorGetPayloadTypes = boolean | null | undefined | { select?: Prisma.ErrorSelect | null }
 type ErrorGetPayload<T extends boolean | null | undefined | { select?: Prisma.ErrorSelect | null }> = Prisma.ErrorGetPayload<T>
-export type ErrorArgs = Prisma.ErrorArgs
+export type ErrorArgs = Prisma.ErrorDefaultArgs
 export type ErrorCreateArgs = Prisma.ErrorCreateArgs
 export type ErrorPropSelect<ArgsSelect extends ErrorGetPayloadTypes> = ErrorGetPayload<ArgsSelect>
 export type ErrorCreateResponse = { error: ErrorModelTable }
@@ -51,8 +51,8 @@ export abstract class ErrorModelTableRepositoryAbstract {
 }
 
 @Injectable()
-export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstract {
-    constructor(private readonly repository: DatabaseService) { }
+export class ErrorModelTableRepository extends DatabaseModel implements ErrorModelTableRepositoryAbstract {
+    constructor(private readonly repository: DatabaseService) { super() }
 
     async create<Args extends ErrorCreateArgs>(args: Args) {
         try {
@@ -61,10 +61,7 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorCreateResponse>({
-                title: 'Register Error',
-                message: [{ message: 'Cannot register error', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorCreateResponse>(err, { title: 'Register Error', message: 'Cannot register error' })
         }
     }
 
@@ -75,10 +72,7 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorCreateManyResponse>({
-                title: 'Register Errors',
-                message: [{ message: 'Cannot register errors', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorCreateManyResponse>(err, { title: 'Register Errors', message: 'Cannot register errors' })
         }
     }
 
@@ -89,10 +83,7 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorUpdateResponse>({
-                title: 'Update Error',
-                message: [{ message: 'Cannot update error', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorUpdateResponse>(err, { title: 'Update Error', message: 'Cannot update error' })
         }
     }
 
@@ -103,10 +94,7 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorUpdateManyResponse>({
-                title: 'Update Errors',
-                message: [{ message: 'Cannot update errors', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorUpdateManyResponse>(err, { title: 'Update Errors', message: 'Cannot update errors' })
         }
     }
 
@@ -116,20 +104,14 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
                 .findFirst(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<ErrorFindFirstResponse<Args>>({
-                            title: 'Find Error',
-                            message: [{ message: 'Error not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<ErrorFindFirstResponse<Args>>(res, { title: 'Find Error', message: 'Error not found' })
                     }
                     return Result.success({ error: res })
                 }) as Result<ErrorFindFirstResponse<Args>>
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorFindFirstResponse<Args>>({
-                title: 'Find Error',
-                message: [{ message: 'Cannot find error', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorFindFirstResponse<Args>>(err, { title: 'Find Error', message: 'Cannot find error' })
         }
     }
 
@@ -139,43 +121,31 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
                 .findFirst(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<ErrorExistsResponse>({
-                            title: 'Error Exists',
-                            message: [{ message: 'Error not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<ErrorExistsResponse>(res, { title: 'Error Exists', message: 'Error not found' })
                     }
                     return Result.success<ErrorExistsResponse>(true)
                 })
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorExistsResponse>({
-                title: 'Find Error',
-                message: [{ message: 'Cannot find error', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorExistsResponse>(err, { title: 'Find Error', message: 'Cannot find error' })
         }
     }
 
     async findUnique<Args extends ErrorFindUniqueArgs>(args: Args) {
         try {
             const response: Result<ErrorFindUniqueResponse<Args>> = await this.repository.error
-                .findFirst(args)
+                .findUnique(args)
                 .then(res => {
                     if (!res) {
-                        return Result.failure<ErrorFindUniqueResponse<Args>>({
-                            title: 'Error Error',
-                            message: [{ message: 'Error not found' }]
-                        }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+                        return this.extractError<ErrorFindUniqueResponse<Args>>(res, { title: 'Error Error', message: 'Error not found' })
                     }
                     return Result.success({ error: res })
                 }) as Result<ErrorFindUniqueResponse<Args>>
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorFindUniqueResponse<Args>>({
-                title: 'Find Error',
-                message: [{ message: 'Cannot find error', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorFindUniqueResponse<Args>>(err, { title: 'Error Error', message: 'Error not found' })
         }
     }
 
@@ -187,25 +157,19 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorFindFirstOrThrowResponse<Args>>({
-                title: 'Find Error',
-                message: [{ message: 'Cannot find error', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorFindFirstOrThrowResponse<Args>>(err, { title: 'Find Error', message: 'Cannot find error' })
         }
     }
 
     async findUniqueOrThrow<Args extends ErrorFindUniqueOrThrowArgs>(args: Args) {
         try {
             const response: Result<ErrorFindUniqueOrThrowResponse<Args>> = await this.repository.error
-                .findFirstOrThrow(args)
+                .findUniqueOrThrow(args)
                 .then(res => Result.success({ error: res })) as Result<ErrorFindUniqueOrThrowResponse<Args>>
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorFindUniqueOrThrowResponse<Args>>({
-                title: 'Find Error',
-                message: [{ message: 'Cannot find error', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorFindUniqueOrThrowResponse<Args>>(err, { title: 'Find Error', message: 'Cannot find error' })
         }
     }
 
@@ -216,10 +180,7 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorFindManyResponse<Args>>({
-                title: 'Find Errors',
-                message: [{ message: 'Cannot find errors', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorFindManyResponse<Args>>(err, { title: 'Find Errors', message: 'Cannot find errors' })
         }
     }
 
@@ -230,10 +191,7 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorDeleteResponse>({
-                title: 'Remove Error',
-                message: [{ message: 'Cannot remove error', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorDeleteResponse>(err, { title: 'Remove Error', message: 'Cannot remove error' })
         }
     }
 
@@ -244,10 +202,7 @@ export class ErrorModelTableRepository implements ErrorModelTableRepositoryAbstr
 
             return response
         } catch (err: any) {
-            return Result.failure<ErrorDeleteManyResponse>({
-                title: 'Remove Errors',
-                message: [{ message: 'Cannot remove errors', origin: err.meta.target.join(';') }]
-            }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError<ErrorDeleteManyResponse>(err, { title: 'Remove Errors', message: 'Cannot remove errors' })
         }
     }
 }

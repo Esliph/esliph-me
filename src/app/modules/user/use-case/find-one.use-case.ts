@@ -6,7 +6,7 @@ import { ZodValidateService } from '@services/zod'
 import { UserFindUniqueRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserPropSelect } from '@modules/user/repository/repository'
 
-export class UserFindOneUseCaseDTO {}
+export class UserFindOneUseCaseDTO { }
 
 export const UserFindOneUseCaseArgsSchema = ZodValidateService.defaultSchemaModelTable()
 
@@ -65,3 +65,31 @@ export class UserFindOneUseCase extends UseCase {
         return response
     }
 }
+/*
+
+Invalid `.findFirst()` invocation in
+C:\Users\danrs\OneDrive\Documentos\Work\Esliph\me\dist\app\modules\error\repository\repository.js:91:18
+
+  88 async findUnique(args) {
+  89     try {
+  90         const response = await this.repository.error
+→ 91             .findFirst({
+                   where: {
+                     id: 0
+                   },
+                   select: {
+                 ?   id?: true,
+                 ?   type?: true,
+                 ?   title?: true,
+                 ?   message?: true,
+                 ?   description?: true,
+                 ?   stack?: true,
+                 ?   createAt?: true,
+                 ?   updateAt?: true,
+                 ?   causes?: true,
+                 ?   _count?: true
+                   }
+                 })
+
+The `select` statement for type Error must not be empty. Available options are listed in green.
+*/

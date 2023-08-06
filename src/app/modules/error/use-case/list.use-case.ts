@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common'
-import { HttpEsliph, Result } from '@esliph/util-node'
+import { Result } from '@esliph/util-node'
 import { z } from 'zod'
+import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
-import { ErrorFindManyRepositoryAbstract } from '@modules/error/repository/find.repository'
 import { ErrorPropSelect } from '@modules/error/repository/repository'
-import { ResultException } from '@util/exceptions/result.exception'
+import { ErrorFindManyRepositoryAbstract } from '@modules/error/repository/find.repository'
 
-export class ErrorListUseCaseDTO {
-    /* Set the DTO properties to list "Error" */
-}
+export class ErrorListUseCaseDTO { }
 
-export const ErrorListUseCaseArgsSchema = z.object({
-    /* Set the filter properties to list "Error" */
-})
+export const ErrorListUseCaseArgsSchema = z.object({})
 
 const ErrorPropsSelected = {
-    /* Define the properties that must be brought in the "Error" listing */
+    id: true,
+    title: true,
+    message: true,
+    description: true,
+    stack: true,
+    type: true
 }
 
 export type ErrorListUseCaseArgs = z.input<typeof ErrorListUseCaseArgsSchema>
@@ -24,8 +25,10 @@ export type ErrorListCasePerformResponseValue = { errors: ErrorPropSelect<{ sele
 export type ErrorListCasePerformResponse = Promise<Result<ErrorListCasePerformResponseValue>>
 
 @Injectable()
-export class ErrorListUseCase {
-    constructor(private readonly listErrorRepository: ErrorFindManyRepositoryAbstract) { }
+export class ErrorListUseCase extends UseCase {
+    constructor(private readonly listErrorRepository: ErrorFindManyRepositoryAbstract) {
+        super()
+    }
 
     async perform(listArgs: ErrorListUseCaseArgs): ErrorListCasePerformResponse {
         try {
@@ -33,10 +36,7 @@ export class ErrorListUseCase {
 
             return responsePerform
         } catch (err: any) {
-            if (err instanceof ResultException) {
-                return err
-            }
-            return Result.failure({ title: 'Create Error', message: [{ message: 'Cannot create error' }] }, HttpEsliph.HttpStatusCodes.BAD_REQUEST)
+            return this.extractError(err, { title: 'List Errors', message: 'Cannot list errors' })
         }
     }
 
@@ -61,7 +61,11 @@ export class ErrorListUseCase {
     }
 
     private async performListRepository(listArgs: ErrorListUseCaseArgs) {
-        const response = await this.listErrorRepository.perform({ where: listArgs, select: ErrorPropsSelected })
+        const response = await this.listErrorRepository.perform({
+            where: listArgs, select: ErrorPropsSelected, include: {
+                causes: true
+            }
+        })
 
         return response
     }
