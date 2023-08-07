@@ -1,4 +1,4 @@
-import { ErrorOperation } from '@modules/error/operational/controller'
+import { ErrorManage } from '@modules/error/error.manage'
 import { Controller, Get, Post, Delete, Put } from '@nestjs/common'
 import { Body, Res, Param, Req } from '@nestjs/common/decorators'
 import { RequestAuthenticate, Response } from '@@types/http'
@@ -9,9 +9,9 @@ import { ErrorPrivileges } from '@modules/error/error.privileges'
 @Privilege(ErrorPrivileges.Parent)
 @Controller('/errors')
 export class ErrorController {
-    constructor(private readonly errorService: ErrorService, private readonly errorOperational: ErrorOperation) {
+    constructor(private readonly errorService: ErrorService, private readonly errorManage: ErrorManage) {
         setTimeout(() => {
-            this.errorOperational.initEvents()
+            this.errorManage.initEvents()
         }, 1)
     }
 

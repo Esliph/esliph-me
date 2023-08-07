@@ -1,5 +1,5 @@
 import { Privilege as PrivilegeModelPrisma } from '@prisma/client'
-import { PrivilegeAccess } from '@modules/privilege/operational/controller'
+import { PrivilegeAccess } from '@modules/privilege/privilege.manage'
 
 export type PrivilegeModelTable = PrivilegeModelPrisma
 

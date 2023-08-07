@@ -1,6 +1,6 @@
 import { ErrorType } from '@modules/error/schema'
 import { Application } from '@core'
-import { PrivilegeOperational } from '@modules/privilege/operational/controller'
+import { PrivilegeManage } from '@modules/privilege/privilege.manage'
 import { ExecutionContext, Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { UnauthorizedException } from '@util/exceptions/unauthorized.exception'
@@ -36,7 +36,7 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
                         type: ErrorType.HttpRequest,
                         causes: result.getError().causes,
                         description: result.getError().description,
-                        stack: err.stack,
+                        stack: err.stack
                     })
                 }
             }
@@ -46,7 +46,7 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
     }
 
     private async canActivePrivilege(context: ExecutionContext, user: AuthenticationJWT | null) {
-        const privileges = PrivilegeOperational.extractPrivilegesOfContext(context)
+        const privileges = PrivilegeManage.extractPrivilegesOfContext(context)
 
         const responseValidatePrivilege = await this.privilegeService.validatePrivilege({
             id: user?.sub || '',

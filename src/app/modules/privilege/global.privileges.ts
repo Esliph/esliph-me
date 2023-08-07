@@ -1,4 +1,4 @@
-import { PrivilegeAccess, PrivilegeOperational } from '@modules/privilege/operational/controller'
+import { PrivilegeAccess, PrivilegeManage } from '@modules/privilege/privilege.manage'
 
 export enum PrivilegeParams {
     Separator = '/'
@@ -7,9 +7,9 @@ export enum PrivilegeParams {
 export enum GlobalPrivileges {
     Ignore = 'ignore',
     Public = 'public',
-    Private = 'private',
+    Private = 'private'
 }
 
 export const globalPrivileges = Object.keys(GlobalPrivileges).map(privilege => GlobalPrivileges[privilege]) as string[]
 
-PrivilegeOperational.registerPrivilege(...globalPrivileges.map(globalPrivilege => ({ name: globalPrivilege, type: PrivilegeAccess.Global })))
+PrivilegeManage.registerPrivilege(...globalPrivileges.map(globalPrivilege => ({ name: globalPrivilege, type: PrivilegeAccess.Global })))

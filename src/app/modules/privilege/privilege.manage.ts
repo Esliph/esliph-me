@@ -11,7 +11,7 @@ export enum PrivilegeAccess {
     Root = '$root'
 }
 
-export class PrivilegeOperational {
+export class PrivilegeManage {
     private static privileges: PrivilegeModel[] = []
     private static metadataController = new MetadataControl(new Reflector())
 

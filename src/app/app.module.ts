@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule, Provider, ValidationPipe } from '@nestjs/common'
-import { ScheduleModule } from '@nestjs/schedule'
 import { APP_PIPE, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core'
 import { GlobalInterceptor } from '@util/interceptor'
 import { AppController } from '@app.controller'
@@ -29,7 +28,7 @@ const AppModuleDependencies: Provider[] = [
 ]
 
 @Module({
-    imports: [ScheduleModule.forRoot(), UserModule, AuthModule, PrivilegeModule, ErrorModule, MailModule],
+    imports: [UserModule, AuthModule, PrivilegeModule, ErrorModule, MailModule],
     controllers: [AppController],
     providers: [AppService, ...AppModuleDependencies, ...AppModuleServices],
     exports: [...AppModuleServices]

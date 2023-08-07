@@ -1,4 +1,4 @@
-import { PrivilegeAccess, PrivilegeOperational } from '@modules/privilege/operational/controller'
+import { PrivilegeAccess, PrivilegeManage } from '@modules/privilege/privilege.manage'
 import { PrivilegeParams } from '@modules/privilege/global.privileges'
 
 export const UserPrivilegeParent = 'users'
@@ -14,4 +14,4 @@ export enum UserPrivileges {
 
 const userPrivileges: string[] = Object.keys(UserPrivileges).map(key => UserPrivileges[key])
 
-PrivilegeOperational.registerPrivilege(...userPrivileges.map(privilege => ({ name: privilege, type: PrivilegeAccess.User })))
+PrivilegeManage.registerPrivilege(...userPrivileges.map(privilege => ({ name: privilege, type: PrivilegeAccess.User })))

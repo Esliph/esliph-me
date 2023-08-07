@@ -1,5 +1,5 @@
-import { PrivilegeOperational } from '@modules/privilege/operational/controller'
+import { PrivilegeManage } from '@modules/privilege/privilege.manage'
 
 export const Privilege = (...privileges: string[]) => {
-    return PrivilegeOperational.addPrivilege(...privileges)
+    return PrivilegeManage.addPrivilege(...privileges)
 }
