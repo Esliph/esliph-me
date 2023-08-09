@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Delete, Put } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 import { Body, Req, Res, Param, Query } from '@nestjs/common/decorators'
 import { Request, Response } from '@@types/http'
 import { Privilege } from '@util/decorators/privilege.decorator'
@@ -9,6 +10,7 @@ import { UserDeleteUseCaseDTO } from '@modules/user/use-case/delete.use-case'
 import { UserCreateUseCaseDTO } from '@modules/user/use-case/create.use-case'
 
 @Privilege(UserPrivileges.Parent)
+@ApiTags('users')
 @Controller('/users')
 export class UserController {
     constructor(private readonly userService: UserService) {}

@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
 import { FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions, FastifyRegisterOptions } from 'fastify'
 import fastifyCsrf from '@fastify/csrf-protection'
@@ -16,7 +17,7 @@ const OBSERVER_CONTEXT = 'AppServer'
 const PORT = getEnv({ name: 'PORT', defaultValue: 8080 })
 
 export class Application {
-    private static appNest: NestFastifyApplication
+    private static app: NestFastifyApplication
     private static observer: ObserverEvent<typeof OBSERVER_CONTEXT, AppEvents>
     private static console: ConsoleLogger
 
@@ -26,9 +27,9 @@ export class Application {
     }
 
     private static async createApplication() {
-        const { console, appNest, observer } = await this.createAppAndConsoleAndObserver()
+        const { console, app, observer } = await this.createAppAndConsoleAndObserver()
 
-        this.appNest = appNest
+        this.app = app
         this.console = console
         this.observer = observer
     }
@@ -36,21 +37,23 @@ export class Application {
     private static async createAppAndConsoleAndObserver() {
         const console = new ConsoleLogger({ context: `[${OBSERVER_CONTEXT}]` })
         const observer = new ObserverEvent<typeof OBSERVER_CONTEXT, AppEvents>(OBSERVER_CONTEXT)
-        const appNest = await NestFactory.create<NestFastifyApplication>(MainModule, new FastifyAdapter(), OPTIONS_NEST_APPLICATION)
+        const app = await NestFactory.create<NestFastifyApplication>(MainModule, new FastifyAdapter(), OPTIONS_NEST_APPLICATION)
 
-        return { appNest, console, observer }
+        return { app, console, observer }
     }
 
     private static async initComponents() {
         this.initObserver()
-        await this.initComponentsFactory()
+        this.buildDocumentApi()
+        this.initComponentsConfig()
+        await this.initComponentsApp()
     }
 
     private static initObserver() {
-        this.on('error', err => { })
+        this.on('error', err => {})
     }
 
-    private static async initComponentsFactory() {
+    private static async initComponentsApp() {
         await this.registerInApp(fastifyCompression, { encodings: ['gzip', 'deflate'] })
         await this.registerInApp(fastifyCookie, { secret: 'my-secret' })
         await this.registerInApp(fastifyCsrf)
@@ -58,12 +61,14 @@ export class Application {
         await this.performListen()
     }
 
+    private static initComponentsConfig() {}
+
     public static async closeApp() {
-        await this.appNest.close()
+        await this.app.close()
     }
 
     private static async performListen() {
-        await this.appNest.listen(PORT)
+        await this.app.listen(PORT)
 
         const url = await this.getUrl()
 
@@ -71,7 +76,7 @@ export class Application {
     }
 
     private static async getUrl() {
-        const url = await this.appNest.getUrl()
+        const url = await this.app.getUrl()
 
         return url
     }
@@ -84,7 +89,20 @@ export class Application {
             | Promise<{ default: FastifyPluginAsync<Options> }>,
         opts?: FastifyRegisterOptions<Options>
     ) {
-        await this.appNest.register(plugin, opts)
+        await this.app.register(plugin, opts)
+    }
+
+    private static buildDocumentApi() {
+        const document = this.createDocumentApi()
+
+        SwaggerModule.setup('v1/api', this.app, document)
+    }
+
+    private static createDocumentApi() {
+        const config = new DocumentBuilder().setTitle('Chat API Docs').setDescription('Chat API').setVersion('1.0').build()
+        const document = SwaggerModule.createDocument(this.app, config)
+
+        return document
     }
 
     static on<Event extends keyof AppEvents>(eventName: Event, handler: (data: AppEvents[Event]) => void) {

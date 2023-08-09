@@ -14,7 +14,7 @@ export class GlobalInterceptor implements NestInterceptor {
     private performAfterHandlerRouter(context: ExecutionContext, res: any) {
         const { url, method } = context.getArgs()[0]
 
-        Application.log(`${method.toUpperCase()} ${url}`, 'ModuleController')
+        Application.log(`${method.toUpperCase()} ${url}`, 'HTTPRquest')
 
         return res
     }

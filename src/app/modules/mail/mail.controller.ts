@@ -1,10 +1,12 @@
 import { Controller, Get, Post, Delete, Put, UseGuards } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 import { Body, Res, Param } from '@nestjs/common/decorators'
 import { Response } from '@@types/http'
 import { MailService } from '@modules/mail/mail.service'
 import { MailUpdateUseCaseDTO } from '@modules/mail/use-case/update.use-case'
 import { MailDeleteUseCaseDTO } from '@modules/mail/use-case/delete.use-case'
 
+@ApiTags('mails')
 @Controller('/mails')
 export class MailController {
     constructor(private readonly mailService: MailService) {}
