@@ -5,8 +5,11 @@ import { UseCase } from '@common/use-case'
 import { ZodValidateService } from '@services/zod'
 import { UserFindManyRepositoryAbstract } from '@modules/user/repository/find.repository'
 import { UserPropSelect } from '@modules/user/repository/repository'
+import { GlobalParamFilterSChema } from '@util/param.filter'
 
 export class UserListUseCaseDTO {}
+
+const UserListFilterArgsSchema = GlobalParamFilterSChema.extend({})
 
 export const UserListUseCaseArgsSchema = z.object({})
 
@@ -15,7 +18,8 @@ const UserPropsSelected = {
     username: true,
     name: true,
     online: true,
-    createAt: true
+    createAt: true,
+    updateAt: true
 }
 
 export type UserListUseCaseArgs = z.input<typeof UserListUseCaseArgsSchema>
@@ -60,7 +64,7 @@ export class UserListUseCase extends UseCase {
     }
 
     private async performListRepository(listArgs: UserListUseCaseArgs) {
-        const response = await this.listUserRepository.perform({ where: listArgs, select: UserPropsSelected })
+        const response = await this.listUserRepository.perform({ where: listArgs, select: { ...UserPropsSelected } })
 
         return response
     }

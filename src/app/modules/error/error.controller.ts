@@ -16,7 +16,7 @@ export class ErrorController {
     }
 
     @Privilege(ErrorPrivileges.List)
-    @Get('/')
+    @Get()
     async getErrors(@Req() req: RequestAuthenticate, @Res() res: Response) {
         const response = await this.errorService.getErrors({})
 

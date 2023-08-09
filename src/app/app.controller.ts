@@ -11,7 +11,7 @@ export class AppController {
     constructor(private readonly appService: AppService, private readonly errorManage: ErrorManage) {}
 
     @Privilege(GlobalPrivileges.Public)
-    @Get('/')
+    @Get()
     home(@Res() res: Response) {
         const response = this.appService.home()
 

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Delete, Put } from '@nestjs/common'
-import { Body, Res, Param } from '@nestjs/common/decorators'
-import { Response } from '@@types/http'
+import { Body, Req, Res, Param, Query } from '@nestjs/common/decorators'
+import { Request, Response } from '@@types/http'
 import { Privilege } from '@util/decorators/privilege.decorator'
 import { UserService } from '@modules/user/user.service'
 import { UserPrivileges } from '@modules/user/user.privileges'
@@ -11,7 +11,7 @@ import { UserCreateUseCaseDTO } from '@modules/user/use-case/create.use-case'
 @Privilege(UserPrivileges.Parent)
 @Controller('/users')
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+    constructor(private readonly userService: UserService) {}
 
     @Privilege(UserPrivileges.List)
     @Get('/')
@@ -19,6 +19,13 @@ export class UserController {
         const response = await this.userService.getUsers({})
 
         return res.status(response.getStatus()).send(response.getResponse())
+    }
+
+    @Get('/filter')
+    async filterUsers(@Res() res: Response, @Query() props) {
+        const response = await this.userService.getUsers({ ...props })
+
+        return res.send({ props })
     }
 
     @Privilege(UserPrivileges.Find)

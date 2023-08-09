@@ -8,9 +8,9 @@ import { PrivilegeCreateUseCaseDTO } from '@modules/privilege/use-case/create.us
 
 @Controller('/privileges')
 export class PrivilegeController {
-    constructor(private readonly privilegeService: PrivilegeService) { }
+    constructor(private readonly privilegeService: PrivilegeService) {}
 
-    @Get('/')
+    @Get()
     async getPrivileges(@Res() res: Response) {
         const response = await this.privilegeService.getPrivileges({})
 

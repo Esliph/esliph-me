@@ -7,9 +7,9 @@ import { MailDeleteUseCaseDTO } from '@modules/mail/use-case/delete.use-case'
 
 @Controller('/mails')
 export class MailController {
-    constructor(private readonly mailService: MailService) { }
+    constructor(private readonly mailService: MailService) {}
 
-    @Get('/')
+    @Get()
     async getMails(@Res() res: Response) {
         const response = await this.mailService.getMails({})
 
