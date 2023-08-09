@@ -95,7 +95,9 @@ export class Application {
     private static buildDocumentApi() {
         const document = this.createDocumentApi()
 
-        SwaggerModule.setup('v1/api', this.app, document)
+        SwaggerModule.setup('v1/api', this.app, document, {
+            customSiteTitle: 'Chat API Docs'
+        })
     }
 
     private static createDocumentApi() {
