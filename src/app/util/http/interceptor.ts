@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators'
 import { Application } from '@core'
 
 @Injectable()
-export class GlobalInterceptor implements NestInterceptor {
+export class GlobalHttpInterceptor implements NestInterceptor {
     constructor() {}
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -14,7 +14,7 @@ export class GlobalInterceptor implements NestInterceptor {
     private performAfterHandlerRouter(context: ExecutionContext, res: any) {
         const { url, method } = context.getArgs()[0]
 
-        Application.log(`${method.toUpperCase()} ${url}`, 'HTTPRquest')
+        Application.log(`${method.toUpperCase()} ${url}`, 'HTTP')
 
         return res
     }

@@ -1,14 +1,14 @@
-import { Gateway } from '@common/gateway'
-import { Injectable } from '@nestjs/common'
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets'
-import { Socket } from 'dgram'
+import { Injectable } from '@nestjs/common'
+import { SocketIO } from '@@types/socket'
+import { Gateway } from '@common/gateway'
+import { CONFIG_SOCKET } from '@config/socket'
 
-@WebSocketGateway({ cors: { origin: '*' } })
+@WebSocketGateway({ cors: { origin: CONFIG_SOCKET.origin } })
 @Injectable()
 export class UserGateway extends Gateway {
     @SubscribeMessage('users')
-    async identity(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-        console.log(data)
-        client.emit('users', data)
+    async identity(@ConnectedSocket() client: SocketIO, @MessageBody() data: any) {
+        this.socketEmit(client, 'users', data)
     }
 }
