@@ -6,6 +6,7 @@ import { PrivilegeListUseCase, PrivilegeListUseCaseArgs } from '@modules/privile
 import { PrivilegeUpdateUseCase, PrivilegeUpdateUseCaseArgs } from '@modules/privilege/use-case/update.use-case'
 import { PrivilegeDeleteUseCase, PrivilegeDeleteUseCaseArgs } from '@modules/privilege/use-case/delete.use-case'
 import { PrivilegeValidateUseCase, PrivilegeValidateUseCaseArgs } from '@modules/privilege/use-case/validate-privileges.use-case'
+import { NeedAuthenticateByAccessPrivilegesUseCase } from './use-case/need-auth-acess-privilege'
 
 @Injectable()
 export class PrivilegeService extends Service {
@@ -52,6 +53,12 @@ export class PrivilegeService extends Service {
 
     async validatePrivilege(body: PrivilegeValidateUseCaseArgs) {
         const response = await this.validatePrivilegeUC.perform({ ...body })
+
+        return response
+    }
+
+    isNeedAuthenticateByAccessPrivileges(...privileges: string[]) {
+        const response = NeedAuthenticateByAccessPrivilegesUseCase({ privileges })
 
         return response
     }

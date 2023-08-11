@@ -1,3 +1,4 @@
+import { PrivilegeModel } from '@modules/privilege/schema'
 import { ErrorType } from '@modules/error/schema'
 import { Application } from '@core'
 import { PrivilegeManage } from '@modules/privilege/privilege.manage'
@@ -21,8 +22,19 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
 
             const user = await this.authService.extractPayload(request.headers?.authorization)
 
-            await this.canActivePrivilege(context, user)
-            // await this.canActiveSuper(context)
+            const privileges = PrivilegeManage.extractPrivilegesOfContext(context)
+
+            const privilegesNeedAuthentication = this.privilegeService.isNeedAuthenticateByAccessPrivileges()
+
+            await this.canActivePrivilege(user, privileges)
+
+            if (!privilegesNeedAuthentication.isSuccess()) {
+                throw new UnauthorizedException(privilegesNeedAuthentication.getError())
+            }
+
+            if (privilegesNeedAuthentication.getValue().needAuthentication) {
+                await this.canActiveSuper(context)
+            }
 
             return true
         } catch (err) {
@@ -45,9 +57,8 @@ export class AuthenticationGuard extends AuthGuard('jwt') {
         }
     }
 
-    private async canActivePrivilege(context: ExecutionContext, user: AuthenticationJWT | null) {
-        const privileges = PrivilegeManage.extractPrivilegesOfContext(context)
-
+    private async canActivePrivilege(user: AuthenticationJWT | null, privileges: PrivilegeModel[]
+    ) {
         const responseValidatePrivilege = await this.privilegeService.validatePrivilege({
             id: user?.sub || '',
             privileges: privileges.map(privilege => privilege.name)

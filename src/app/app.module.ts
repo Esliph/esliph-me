@@ -22,10 +22,10 @@ const AppModuleDependencies: Provider[] = [
         provide: APP_INTERCEPTOR,
         useClass: GlobalHttpInterceptor,
     },
-    {
-        provide: APP_INTERCEPTOR,
-        useClass: GlobalIoInterceptor
-    },
+    // {
+    //     provide: APP_INTERCEPTOR,
+    //     useClass: GlobalIoInterceptor
+    // },
     {
         provide: APP_GUARD,
         useClass: AuthenticationGuard
@@ -39,5 +39,5 @@ const AppModuleDependencies: Provider[] = [
     exports: [...AppModuleServices]
 })
 export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {}
+    configure(consumer: MiddlewareConsumer) { }
 }

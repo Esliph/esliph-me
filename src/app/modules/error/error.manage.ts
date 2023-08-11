@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class ErrorManage {
-    constructor(private readonly errorService: ErrorService) {}
+    constructor(private readonly errorService: ErrorService) { }
 
     initEvents() {
         Application.on('error', ({ message, title, type, causes = [], description, stack }) => {
@@ -22,6 +22,6 @@ export class ErrorManage {
     }
 
     async registerError(args: ErrorCreateUseCaseArgs) {
-        // const response = await this.errorService.create({ ...args })
+        const response = await this.errorService.create({ ...args })
     }
 }

@@ -50,18 +50,18 @@ export class Application {
     }
 
     private static initObserver() {
-        this.on('error', err => {})
+        this.on('error', err => { })
     }
 
     private static async initComponentsApp() {
         await this.registerInApp(fastifyCompression, { encodings: ['gzip', 'deflate'] })
         await this.registerInApp(fastifyCookie, { secret: 'my-secret' })
         await this.registerInApp(fastifyCsrf)
-        // await this.registerInApp(fastifyHelmet)
+        await this.registerInApp(fastifyHelmet)
         await this.performListen()
     }
 
-    private static initComponentsConfig() {}
+    private static initComponentsConfig() { }
 
     public static async closeApp() {
         await this.app.close()
